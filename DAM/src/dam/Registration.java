@@ -8,13 +8,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 //import java.io.InputStream;
 //import java.security.KeyStore.TrustedCertificateEntry;
 import java.util.regex.Pattern;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 //import javax.swing.border.LineBorder;
+import java.sql.*;
 
 public class Registration implements ActionListener{
 	
@@ -124,7 +129,7 @@ public class Registration implements ActionListener{
 		inputLabel[4].setBounds(608,228,300,40);
 		inputLabel[5].setText("Phone");
 		inputLabel[5].setBounds(343,315,180,40);
-		inputLabel[6].setText("Address");
+		inputLabel[6].setText("Area");
 		inputLabel[6].setBounds(343,403,180,40);
 		
 		for(int i = 0; i < 7; i++) {
@@ -194,13 +199,13 @@ public class Registration implements ActionListener{
 		String pass = inputField[3].getText();
 		String conPass = inputField[4].getText();
 		String phone = inputField[5].getText();
-		String address = inputField[6].getText();
+		String area = inputField[6].getText();
 		
 		String nameRegex = "^[A-Z]{1}[a-z]{1,100}$";
 		String emailRegex = "^[a-z0-9]+@[a-z]+(\\.[a-z]+)+$";
 		String phoneRegex = "^(\\+88)?01[2-9]\\d{8}$";
 		String passRegex = "^((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])).{8,20}$";
-		String addRegex = "^[A-Za-z]+(,Sylhet)$";
+		String addRegex = "^[A-Za-z0-9]{1,200}$";
 		
 		if(e.getSource() == loginBtn) {
 			frame.dispose();
@@ -308,7 +313,7 @@ public class Registration implements ActionListener{
 				inputField[6].setBorder(inpuErrorBorder);
 				errorLabel[6].setVisible(true);
 				
-			}else if(inputField[6].getText().length()>0 && !Pattern.matches(addRegex, address)) {
+			}else if(inputField[6].getText().length()>0 && !Pattern.matches(addRegex, area)) {
 				
 				errorLabel[6].setText("invalid address");
 				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
@@ -316,7 +321,51 @@ public class Registration implements ActionListener{
 				errorLabel[6].setVisible(true);
 				
 			}
-			
+			else {
+				
+				String url = "jdbc:mysql://localhost:4206/dam";
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection con = DriverManager.getConnection(url, "dam", "");
+					
+					Statement st = con.createStatement();
+					
+					ResultSet rss = st.executeQuery("select `email`,`phone` from `registration`");
+					boolean duplicacy = false;
+					
+					while(rss.next()) {
+						if(rss.getString(1).equals(email) || rss.getString(2).equals(phone)) {
+							duplicacy = true;
+						}
+					}
+					
+					if(duplicacy != true) {
+						int rs = st.executeUpdate("INSERT INTO `registration`(`first_name`, `last_name`, `email`, `pass`, `phone`, `area`) VALUES ('"+firstName+"','"+lastName+"','"+email+"','"+pass+"','"+phone+"','"+area+"')");
+						
+						if(rs > 0) {
+							for(int i = 0; i < 7; i++) {
+								inputField[i].setText(null);
+							}
+							inputField[0].requestFocus();
+							
+						}else {
+							System.out.println("Not Inserted");
+						}
+					}else {
+						JOptionPane.showMessageDialog(null, "Already registered","Warning",JOptionPane.WARNING_MESSAGE);
+						for(int i = 0; i < 7; i++) {
+							inputField[i].setText(null);
+						}
+						inputField[0].requestFocus();
+					}
+					st.close();
+					con.close();
+					
+				} catch (ClassNotFoundException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 			
 		}
 	}

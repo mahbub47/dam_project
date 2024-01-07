@@ -94,13 +94,13 @@ public class DoctorLogin implements ActionListener{
 		frame.add(lbl03);
 		
 		errLbl01 = new JLabel();
-		errLbl01.setBounds(278, 340, 100, 40);
+		errLbl01.setBounds(364, 340, 100, 40);
 		errLbl01.setForeground(red);
 		errLbl01.setFont(errorLabelFont);
 		frame.add(errLbl01);
 		
 		errLbl02 = new JLabel();
-		errLbl02.setBounds(278, 439, 100, 40);
+		errLbl02.setBounds(364, 439, 100, 40);
 		errLbl02.setForeground(red);
 		errLbl02.setFont(errorLabelFont);
 		frame.add(errLbl02);
@@ -159,10 +159,10 @@ public class DoctorLogin implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		String email = tf01.getText();
+		String id = tf01.getText();
 		String pass = tf02.getText();
-		String emailRegex = "^[a-z0-9]+@[a-z]+(\\.[a-z]+)+$";
-		String passRegex = "^((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])).{8,20}$";
+		String IDRegex = "^DR{1}[0-9]{4}$";
+		String passRegex = "^\\d{6}$";
 		
 		if(e.getSource() == loginBtn) {
 			errLbl01.setVisible(false);
@@ -172,28 +172,28 @@ public class DoctorLogin implements ActionListener{
 			
 			if(tf01.getText().length() == 0) {
 				
-				errLbl01.setText("enter email");
+				errLbl01.setText("enter id");
 				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				tf01.setBorder(inpuErrorBorder);
 				errLbl01.setVisible(true);
 				
-			}else if(tf01.getText().length()>0 && !Pattern.matches(emailRegex, email)) {
+			}else if(tf01.getText().length()>0 && !Pattern.matches(IDRegex, id)) {
 				
-				errLbl01.setText("invalid email");
+				errLbl01.setText("invalid id");
 				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				tf01.setBorder(inpuErrorBorder);
 				errLbl01.setVisible(true);
 				
 			} else if(tf02.getText().length() == 0) {
 				
-				errLbl02.setText("enter password");
+				errLbl02.setText("enter passcode");
 				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				tf02.setBorder(inpuErrorBorder);
 				errLbl02.setVisible(true);
 				
 			}else if(tf02.getText().length()>0 && !Pattern.matches(passRegex, pass)) {
 				
-				errLbl02.setText("invalid password");
+				errLbl02.setText("invalid passcode");
 				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				tf02.setBorder(inpuErrorBorder);
 				errLbl02.setVisible(true);

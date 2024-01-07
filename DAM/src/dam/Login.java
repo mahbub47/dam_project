@@ -4,17 +4,27 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.*;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
@@ -32,9 +42,13 @@ public class Login implements ActionListener{
 	JLabel lbl01;
 	JButton loginBtn,regBtn,docBtn;
 	
-	JTextField tf01,tf02;
+	JTextField tf01;
+	JPasswordField tf02;
 	JLabel lbl02,lbl03;
 	JLabel errLbl01,errLbl02,loginLabel;
+	
+	JLabel display;
+	ImageIcon img01,img02;
 	
 	public Login() {
 		
@@ -120,13 +134,75 @@ public class Login implements ActionListener{
 		tf01.setBorder(null);
 		frame.add(tf01);
 		
-		tf02 = new JTextField();
+		tf02 = new JPasswordField();
 		tf02.setBounds(278,409,223,40);
 		tf02.setFont(textFieldFont);
 		tf02.setBackground(light02);
 		tf02.setForeground(darkblue);
 		tf02.setBorder(null);
+		tf02.setEchoChar('*');
 		frame.add(tf02);
+		
+		display = new JLabel();
+		display.setBounds(511, 418, 20, 20);
+		frame.add(display);
+		
+		
+		
+		img01 = new ImageIcon(getClass().getResource("eye.png"));
+		img02 = new ImageIcon(getClass().getResource("view.png"));
+		
+		Image img11 = img01.getImage();
+		Image newImg11 = img11.getScaledInstance(20, 20,  java.awt.Image.SCALE_SMOOTH);
+		img01 = new ImageIcon(newImg11);
+		
+		Image img22 = img02.getImage();
+		Image newImg22 = img22.getScaledInstance(20, 20,  java.awt.Image.SCALE_SMOOTH);
+		img02 = new ImageIcon(newImg22);
+		
+		display.setIcon(img01);
+		
+		display.addMouseListener(new MouseListener() {
+			boolean hide = true;
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				if(hide == true) {
+					display.setIcon(img01);
+					hide = !hide;
+					tf02.setEchoChar('*');
+				}else {
+					display.setIcon(img02);
+					hide = !hide;
+					tf02.setEchoChar((char) 0);
+				}
+				
+			}
+		});
 		
 		regBtn = new JButton("Register");
 		regBtn.setBounds(168,500,70,40);
@@ -166,6 +242,7 @@ public class Login implements ActionListener{
 		frame.validate();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -173,6 +250,7 @@ public class Login implements ActionListener{
 		String pass = tf02.getText();
 		String emailRegex = "^[a-z0-9]+@[a-z]+(\\.[a-z]+)+$";
 		String passRegex = "^((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])).{8,20}$";
+		Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 		
 		if(e.getSource() == loginBtn) {
 			errLbl01.setVisible(false);
@@ -183,31 +261,75 @@ public class Login implements ActionListener{
 			if(tf01.getText().length() == 0) {
 				
 				errLbl01.setText("enter email");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
+				
 				tf01.setBorder(inpuErrorBorder);
 				errLbl01.setVisible(true);
 				
 			}else if(tf01.getText().length()>0 && !Pattern.matches(emailRegex, email)) {
 				
 				errLbl01.setText("invalid email");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				tf01.setBorder(inpuErrorBorder);
 				errLbl01.setVisible(true);
 				
 			} else if(tf02.getText().length() == 0) {
 				
 				errLbl02.setText("enter password");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				tf02.setBorder(inpuErrorBorder);
 				errLbl02.setVisible(true);
 				
 			}else if(tf02.getText().length()>0 && !Pattern.matches(passRegex, pass)) {
 				
 				errLbl02.setText("invalid password");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				tf02.setBorder(inpuErrorBorder);
 				errLbl02.setVisible(true);
 				
+			}else {
+				String url = "jdbc:mysql://localhost:4206/dam";
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection con = DriverManager.getConnection(url, "dam", "");
+					
+					Statement st = con.createStatement();
+					
+					ResultSet rss = st.executeQuery("select `email`,`pass` from `registration`");
+					boolean CorrectE = false;
+					boolean CorrectP = false;
+					
+					while(rss.next()) {
+						if(rss.getString(1).equals(email)) {
+							CorrectE = true;
+							
+							if(rss.getString(2).equals(pass)) {
+								CorrectP = true;
+							}
+						}
+					}
+					
+					if(CorrectE == true && CorrectP == true) {
+						
+						frame.dispose();
+						new DoctorLogin();
+						
+					}else {
+						if(CorrectE != true) {
+							errLbl01.setText("incorrect email");
+							tf01.setBorder(inpuErrorBorder);
+							errLbl01.setVisible(true);
+						}
+						
+						if(CorrectP != true) {
+							errLbl02.setText("incorrect password");
+							tf02.setBorder(inpuErrorBorder);
+							errLbl02.setVisible(true);
+						}
+					}
+					st.close();
+					con.close();
+					
+				} catch (ClassNotFoundException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			
 		}
