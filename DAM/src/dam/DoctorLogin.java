@@ -56,7 +56,7 @@ public class DoctorLogin implements ActionListener{
 		Font textFieldFont = font01.deriveFont(14f);
 		Font inputLabelFont = font02.deriveFont(16f);
 		Font loginBtnFont = font02.deriveFont(14f);
-//		Font loginLabelFont = font03.deriveFont(12f);
+		Font loginLabelFont = font03.deriveFont(12f);
 		Font errorLabelFont = font04.deriveFont(12f);
 		Font loginFont = font02.deriveFont(96f);
 		
@@ -67,6 +67,7 @@ public class DoctorLogin implements ActionListener{
 		frame.setLayout(null);
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setBackground(light01);
+		frame.setResizable(false);
 		
 		pnl02 = new JPanel();
 		pnl02.setBounds(870,0,22,125);

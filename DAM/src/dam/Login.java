@@ -12,10 +12,6 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
@@ -28,7 +24,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
-public class Login implements ActionListener{
+public class Login implements ActionListener, MouseListener {
 	
 	JFrame frame;
 	JPanel pnl01,pnl02,pnl03;
@@ -40,7 +36,7 @@ public class Login implements ActionListener{
 	Color red = new Color(247, 68, 78);
 	
 	JLabel lbl01;
-	JButton loginBtn,regBtn,docBtn;
+	JButton loginBtn,docBtn;
 	
 	JTextField tf01;
 	JPasswordField tf02;
@@ -49,6 +45,9 @@ public class Login implements ActionListener{
 	
 	JLabel display;
 	ImageIcon img01,img02;
+	JLabel reg;
+	
+	public int userid = 0;
 	
 	public Login() {
 		
@@ -82,6 +81,7 @@ public class Login implements ActionListener{
 		frame.setLayout(null);
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setBackground(light01);
+		frame.setResizable(false);
 		
 		pnl02 = new JPanel();
 		pnl02.setBounds(870,0,22,125);
@@ -204,14 +204,12 @@ public class Login implements ActionListener{
 			}
 		});
 		
-		regBtn = new JButton("Register");
-		regBtn.setBounds(168,500,70,40);
-		regBtn.setFocusable(false);
-		regBtn.setBackground(light01);
-		regBtn.setBorder(null);
-		regBtn.setFont(errorLabelFont);
-		regBtn.addActionListener(this);
-		frame.add(regBtn);
+		reg = new JLabel("Register");
+		reg.setBounds(168,500,70,40);
+		reg.setFont(errorLabelFont);
+		reg.addMouseListener(this);
+		reg.setForeground(darkblue);
+		frame.add(reg);
 		
 		loginBtn = new JButton("Login");
 		loginBtn.setBounds(795,500,100,40);
@@ -291,24 +289,26 @@ public class Login implements ActionListener{
 					
 					Statement st = con.createStatement();
 					
-					ResultSet rss = st.executeQuery("select `email`,`pass` from `registration`");
+					ResultSet rss = st.executeQuery("select `admin_id`,`email`,`pass` from `registration`");
 					boolean CorrectE = false;
 					boolean CorrectP = false;
 					
 					while(rss.next()) {
-						if(rss.getString(1).equals(email)) {
+						if(rss.getString(2).equals(email)) {
 							CorrectE = true;
 							
-							if(rss.getString(2).equals(pass)) {
+							if(rss.getString(3).equals(pass)) {
 								CorrectP = true;
+								userid = rss.getInt(1);
 							}
 						}
 					}
 					
 					if(CorrectE == true && CorrectP == true) {
 						
+						System.out.println(userid);
 						frame.dispose();
-						new DoctorLogin();
+						new AdminMain(userid);
 						
 					}else {
 						if(CorrectE != true) {
@@ -334,14 +334,42 @@ public class Login implements ActionListener{
 			
 		}
 		
-		if(e.getSource() == regBtn) {
-			frame.dispose();
-			new Registration();
-		}
-		
 		if(e.getSource() == docBtn) {
 			frame.dispose();
 			new DoctorLogin();
 		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource() == reg) {
+			frame.dispose();
+			new Registration();
+		}
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

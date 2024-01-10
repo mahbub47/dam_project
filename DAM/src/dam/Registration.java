@@ -6,6 +6,8 @@ import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
@@ -21,7 +23,7 @@ import javax.swing.border.Border;
 //import javax.swing.border.LineBorder;
 import java.sql.*;
 
-public class Registration implements ActionListener{
+public class Registration implements ActionListener, MouseListener{
 	
 	JFrame frame;
 	JPanel pnl01,pnl02,pnl03;
@@ -35,8 +37,9 @@ public class Registration implements ActionListener{
 	JLabel[] inputLabel = new JLabel[7];
 	JTextField[] inputField = new JTextField[7];
 	JLabel lbl01,regLabel;
-	JButton loginBtn,regBtn;
+	JButton regBtn;
 	JLabel[] errorLabel = new JLabel[7];
+	JLabel log;
 	
 	public Registration() {
 		
@@ -71,6 +74,7 @@ public class Registration implements ActionListener{
 		frame.setLayout(null);
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().setBackground(light01);
+		frame.setResizable(false);
 		
 		pnl02 = new JPanel();
 		pnl02.setBounds(50,0,22,125);
@@ -161,14 +165,12 @@ public class Registration implements ActionListener{
 		errorLabel[6].setBounds(343,467,180,40);
 		errorLabel[6].setVisible(false);
 		
-		loginBtn = new JButton("login");
-		loginBtn.setBounds(456,500,70,40);
-		loginBtn.setFocusable(false);
-		loginBtn.setBackground(light01);
-		loginBtn.setBorder(null);
-		loginBtn.setFont(errLabelFont);
-		loginBtn.addActionListener(this);
-		frame.add(loginBtn);
+		log = new JLabel("Login");
+		log.setBounds(460,500,70,40);
+		log.setFont(errLabelFont);
+		log.addMouseListener(this);
+		log.setForeground(darkblue);
+		frame.add(log);
 		
 		regBtn = new JButton("Register");
 		regBtn.setBounds(795,500,100,40);
@@ -207,10 +209,8 @@ public class Registration implements ActionListener{
 		String passRegex = "^((?=.*\\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*])).{8,20}$";
 		String addRegex = "^[A-Za-z0-9]{1,200}$";
 		
-		if(e.getSource() == loginBtn) {
-			frame.dispose();
-			new Login();
-		}
+		Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
+		
 		
 		if(e.getSource() == regBtn) {
 			
@@ -225,98 +225,85 @@ public class Registration implements ActionListener{
 			if(inputField[0].getText().length() == 0) {
 				
 				errorLabel[0].setText("enter first name");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
+				
 				inputField[0].setBorder(inpuErrorBorder);
 				errorLabel[0].setVisible(true);
 				
 			}else if(inputField[0].getText().length()>0 && !Pattern.matches(nameRegex, firstName)) {
 				
 				errorLabel[0].setText("invalid name");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[0].setBorder(inpuErrorBorder);
 				errorLabel[0].setVisible(true);
 				
 			} else if(inputField[1].getText().length() == 0) {
 				
 				errorLabel[1].setText("enter last name");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[1].setBorder(inpuErrorBorder);
 				errorLabel[1].setVisible(true);
 				
 			}else if(inputField[1].getText().length()>0 && !Pattern.matches(nameRegex, lastName)) {
 				
 				errorLabel[1].setText("invalid name");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[1].setBorder(inpuErrorBorder);
 				errorLabel[1].setVisible(true);
 				
 			}else if(inputField[2].getText().length() == 0) {
 				
 				errorLabel[2].setText("enter email address");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[2].setBorder(inpuErrorBorder);
 				errorLabel[2].setVisible(true);
 				
 			}else if(inputField[2].getText().length()>0 && !Pattern.matches(emailRegex, email)) {
 				
 				errorLabel[2].setText("invalid email address");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[2].setBorder(inpuErrorBorder);
 				errorLabel[2].setVisible(true);
 				
 			}else if(inputField[3].getText().length() == 0) {
 				
 				errorLabel[3].setText("enter password");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[3].setBorder(inpuErrorBorder);
 				errorLabel[3].setVisible(true);
 				
 			} else if(inputField[3].getText().length()>0 && !Pattern.matches(passRegex, pass)) {
 				
 				errorLabel[3].setText("invalid password");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[3].setBorder(inpuErrorBorder);
 				errorLabel[3].setVisible(true);
 				
 			}else if(inputField[4].getText().length() == 0) {
 				
 				errorLabel[4].setText("enter confirm password");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[4].setBorder(inpuErrorBorder);
 				errorLabel[4].setVisible(true);
 				
 			}else if(inputField[4].getText().length()>0 && !conPass.equals(pass)) {
 				
 				errorLabel[4].setText("password doesn't match");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[4].setBorder(inpuErrorBorder);
 				errorLabel[4].setVisible(true);
 				
 			}else if(inputField[5].getText().length() == 0) {
 				
 				errorLabel[5].setText("enter phone number");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[5].setBorder(inpuErrorBorder);
 				errorLabel[5].setVisible(true);
 				
 			}else if(inputField[5].getText().length()>0 && !Pattern.matches(phoneRegex, phone)) {
 				
 				errorLabel[5].setText("invalid phone");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[5].setBorder(inpuErrorBorder);
 				errorLabel[5].setVisible(true);
 				
 			}else if(inputField[6].getText().length() == 0) {
 				
 				errorLabel[6].setText("enter address");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[6].setBorder(inpuErrorBorder);
 				errorLabel[6].setVisible(true);
 				
 			}else if(inputField[6].getText().length()>0 && !Pattern.matches(addRegex, area)) {
 				
 				errorLabel[6].setText("invalid address");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				inputField[6].setBorder(inpuErrorBorder);
 				errorLabel[6].setVisible(true);
 				
@@ -368,6 +355,39 @@ public class Registration implements ActionListener{
 			}
 			
 		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getSource() == log) {
+			frame.dispose();
+			new Login();
+		}
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
