@@ -8,6 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
@@ -162,8 +167,10 @@ public class DoctorLogin implements ActionListener{
 		// TODO Auto-generated method stub
 		String id = tf01.getText();
 		String pass = tf02.getText();
-		String IDRegex = "^DR{1}[0-9]{4}$";
-		String passRegex = "^\\d{6}$";
+		String IDRegex = "^[A-Z]{2}[0-9]{4}$";
+		String passRegex = "^[0-9]{6}$";
+		int docID = 0;
+		Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 		
 		if(e.getSource() == loginBtn) {
 			errLbl01.setVisible(false);
@@ -174,31 +181,77 @@ public class DoctorLogin implements ActionListener{
 			if(tf01.getText().length() == 0) {
 				
 				errLbl01.setText("enter id");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				tf01.setBorder(inpuErrorBorder);
 				errLbl01.setVisible(true);
 				
 			}else if(tf01.getText().length()>0 && !Pattern.matches(IDRegex, id)) {
 				
 				errLbl01.setText("invalid id");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				tf01.setBorder(inpuErrorBorder);
 				errLbl01.setVisible(true);
 				
 			} else if(tf02.getText().length() == 0) {
 				
 				errLbl02.setText("enter passcode");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				tf02.setBorder(inpuErrorBorder);
 				errLbl02.setVisible(true);
 				
 			}else if(tf02.getText().length()>0 && !Pattern.matches(passRegex, pass)) {
 				
 				errLbl02.setText("invalid passcode");
-				Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
 				tf02.setBorder(inpuErrorBorder);
 				errLbl02.setVisible(true);
 				
+			}else {
+				
+				String url = "jdbc:mysql://localhost:4206/dam";
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					Connection con = DriverManager.getConnection(url, "dam", "");
+					
+					Statement st = con.createStatement();
+					
+					ResultSet rss = st.executeQuery("select `doctor_id`,`bmdc_id`,`passcode` from `doctor`");
+					boolean CorrectE = false;
+					boolean CorrectP = false;
+					
+					while(rss.next()) {
+						if(rss.getString(2).equals(id)) {
+							CorrectE = true;
+							
+							if(rss.getString(3).equals(pass)) {
+								CorrectP = true;
+								docID = rss.getInt(1);
+							}
+						}
+					}
+					
+					if(CorrectE == true && CorrectP == true) {
+						
+						System.out.println(docID);
+						frame.dispose();
+						new DoctorMain(docID);
+						
+					}else {
+						if(CorrectE != true) {
+							errLbl01.setText("incorrect bmdc_id");
+							tf01.setBorder(inpuErrorBorder);
+							errLbl01.setVisible(true);
+						}
+						
+						if(CorrectP != true) {
+							errLbl02.setText("incorrect passcode");
+							tf02.setBorder(inpuErrorBorder);
+							errLbl02.setVisible(true);
+						}
+					}
+					st.close();
+					con.close();
+					
+				} catch (ClassNotFoundException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			
 		}

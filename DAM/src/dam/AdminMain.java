@@ -14,15 +14,23 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Pattern;
 
 import javax.imageio.plugins.tiff.GeoTIFFTagSet;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.table.DefaultTableModel;
+
+//import org.jcp.xml.dsig.internal.dom.ApacheData;
 
 public class AdminMain implements ActionListener, MouseListener{
+	
+	int updocID = 0;
 	JFrame frame;
 	JPanel bPanel,hPanel,aPanel;
 	Font font01, font02,font03,font04;
@@ -73,6 +81,38 @@ public class AdminMain implements ActionListener, MouseListener{
 	JTextField sptf01,sptf02;
 	JButton spCBtn,spBBtn;
 	
+	JTable dtable;
+	JScrollPane jtpane;
+	
+	JButton dlDBtn, dlBBtn;
+	
+	JLabel apMLbl01,apMLbl02,apMLbl03;
+	
+	JLabel apALbl01,apALbl02,apALbl03,apALbl04,apALbl05,apALbl06,apALbl07;
+	JTextField adaptf01,adaptf02,adaptf03,adaptf04,adaptf05;
+	JButton adapBBtn,adapABtn;
+	
+	JComboBox gcb;
+	JComboBox tcb;
+	
+	JTable rapTable;
+	JScrollPane rapSPane;
+	JButton rapBBtn,rapDBtn,rapRBtn;
+	
+	JTable aplTable;
+	JScrollPane aplSPane;
+	JButton aplBBtn, aplDBtn;
+	
+	DefaultTableModel model;
+	
+	JLabel emLbl01,emLbl02;
+	JTextField emtf01;
+	JTextArea emta01;
+	JButton emMBtn;
+	
+	JLabel errLbl01,errLbl02,errLbl03,errLbl04,errLbl05;
+	
+	
 	public AdminMain(int user) {
 		
 		frame = new JFrame();
@@ -90,6 +130,7 @@ public class AdminMain implements ActionListener, MouseListener{
 		frame.validate();
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void MainProfile(int user) {
 		userID = user;
 		
@@ -118,8 +159,12 @@ public class AdminMain implements ActionListener, MouseListener{
 		Font textFieldFont = font01.deriveFont(14f);
 		Font loginFont = font02.deriveFont(96f);
 		Font inputLabelFont = font02.deriveFont(16f);
+		Font errLabelFont = font04.deriveFont(12f);
 		
-		profIcon = new ImageIcon(getClass().getResource("profile.png"));
+		String[] genderString = {"Male","Female"};
+		String[] timeString = {"5pm" ,"6pm", "8pm"};
+		
+		profIcon = new ImageIcon(getClass().getResource("adminProfile.png"));
 		
 		Image img11 = profIcon.getImage();
 		Image newImg11 = img11.getScaledInstance(139, 139,  java.awt.Image.SCALE_SMOOTH);
@@ -135,7 +180,35 @@ public class AdminMain implements ActionListener, MouseListener{
 		aPanel.setBackground(red);
 		frame.add(aPanel);
 		
+		errLbl01 = new JLabel();
+		errLbl01.setForeground(red);
+		errLbl01.setFont(errLabelFont);
+		errLbl01.setVisible(false);
+		frame.add(errLbl01);
 		
+		errLbl02 = new JLabel();
+		errLbl02.setForeground(red);
+		errLbl02.setFont(errLabelFont);
+		errLbl02.setVisible(false);
+		frame.add(errLbl02);
+		
+		errLbl03 = new JLabel();
+		errLbl03.setForeground(red);
+		errLbl03.setFont(errLabelFont);
+		errLbl03.setVisible(false);
+		frame.add(errLbl03);
+		
+		errLbl04 = new JLabel();
+		errLbl04.setForeground(red);
+		errLbl04.setFont(errLabelFont);
+		errLbl04.setVisible(false);
+		frame.add(errLbl04);
+		
+		errLbl05 = new JLabel();
+		errLbl05.setForeground(red);
+		errLbl05.setFont(errLabelFont);
+		errLbl05.setVisible(false);
+		frame.add(errLbl05);
 		
 		
 		
@@ -190,7 +263,7 @@ public class AdminMain implements ActionListener, MouseListener{
 		frame.add(dLbl03);
 		dLbl03.setVisible(false);
 		
-		dLbl04 = new JLabel("View Schedule");
+		dLbl04 = new JLabel("Doctor List");
 		dLbl04.setFont(normalLabel);
 		dLbl04.setForeground(darkblue);
 		dLbl04.setBounds(329, 340, 150, 40);
@@ -603,6 +676,323 @@ public class AdminMain implements ActionListener, MouseListener{
 		frame.add(spBBtn);
 		
 		
+//		doctor list
+		
+		
+		
+		dtable = new JTable();
+		dtable.setBounds(287, 169, 600, 300);
+		frame.add(dtable);
+		dtable.setBackground(light01);
+		dtable.getTableHeader().setBackground(light02);
+		jtpane = new JScrollPane(dtable);
+		jtpane.setBounds(287, 169, 600, 300);
+		jtpane.setBackground(light01);
+		jtpane.setBorder(null);
+		frame.add(jtpane);
+		jtpane.setVisible(false);
+		
+		
+		dlDBtn = new JButton("Display");
+		dlDBtn.setBounds(800,490,80,40);
+		dlDBtn.setFocusable(false);
+		dlDBtn.setBackground(red);
+		dlDBtn.setBorder(null);
+		dlDBtn.setFont(btnFont);
+		dlDBtn.addActionListener(this);
+		dlDBtn.setVisible(false);
+		frame.add(dlDBtn);
+		
+		dlBBtn = new JButton("Back");
+		dlBBtn.setBounds(686,490,80,40);
+		dlBBtn.setFocusable(false);
+		dlBBtn.setBackground(red);
+		dlBBtn.setBorder(null);
+		dlBBtn.setFont(btnFont);
+		dlBBtn.addActionListener(this);
+		dlBBtn.setVisible(false);
+		frame.add(dlBBtn);
+		
+		
+		
+//		Appointment section main
+		
+		apMLbl01 = new JLabel("Add Appointment");
+		apMLbl01.setFont(normalLabel);
+		apMLbl01.setForeground(darkblue);
+		apMLbl01.setBounds(329, 213, 200, 40);
+		apMLbl01.addMouseListener(this);
+		frame.add(apMLbl01);
+		apMLbl01.setVisible(false);
+		
+		apMLbl02 = new JLabel("Remove Appoinment");
+		apMLbl02.setFont(normalLabel);
+		apMLbl02.setForeground(darkblue);
+		apMLbl02.setBounds(329, 262, 200, 40);
+		apMLbl02.addMouseListener(this);
+		frame.add(apMLbl02);
+		apMLbl02.setVisible(false);
+		
+		apMLbl03 = new JLabel("Appointment List");
+		apMLbl03.setFont(normalLabel);
+		apMLbl03.setForeground(darkblue);
+		apMLbl03.setBounds(329, 311, 200, 40);
+		apMLbl03.addMouseListener(this);
+		frame.add(apMLbl03);
+		apMLbl03.setVisible(false);
+		
+		
+		
+		adaptf01 = new JTextField();
+		adaptf01.setBounds(308,184,225,40);
+		adaptf01.setFont(textFieldFont);
+		adaptf01.setBackground(light02);
+		adaptf01.setForeground(darkblue);
+		adaptf01.setBorder(null);
+		adaptf01.setVisible(false);
+		frame.add(adaptf01);
+		
+		adaptf02 = new JTextField();
+		adaptf02.setBounds(562,184,100,40);
+		adaptf02.setFont(textFieldFont);
+		adaptf02.setBackground(light02);
+		adaptf02.setForeground(darkblue);
+		adaptf02.setBorder(null);
+		adaptf02.setVisible(false);
+		frame.add(adaptf02);
+		
+		gcb = new JComboBox(genderString);
+		gcb.setSelectedIndex(0);
+		gcb.setBackground(light02);
+		gcb.setForeground(darkblue);
+		gcb.setBounds(687,184,121,40);
+		gcb.setBorder(null);
+		gcb.setVisible(false);
+		frame.add(gcb);
+				
+		adaptf03 = new JTextField();
+		adaptf03.setBounds(308,271,196,40);
+		adaptf03.setFont(textFieldFont);
+		adaptf03.setBackground(light02);
+		adaptf03.setForeground(darkblue);
+		adaptf03.setBorder(null);
+		adaptf03.setVisible(false);
+		frame.add(adaptf03);
+		
+		tcb = new JComboBox(timeString);
+		tcb.setSelectedIndex(0);
+		tcb.setBackground(light02);
+		tcb.setForeground(darkblue);
+		tcb.setBounds(546,271,129,40);
+		tcb.setBorder(null);
+		tcb.setVisible(false);
+		frame.add(tcb);
+		
+		adaptf04 = new JTextField();
+		adaptf04.setBounds(308,357,275,40);
+		adaptf04.setFont(textFieldFont);
+		adaptf04.setBackground(light02);
+		adaptf04.setForeground(darkblue);
+		adaptf04.setBorder(null);
+		adaptf04.setVisible(false);
+		frame.add(adaptf04);
+		
+		adaptf05 = new JTextField();
+		adaptf05.setBounds(308,449,275,40);
+		adaptf05.setFont(textFieldFont);
+		adaptf05.setBackground(light02);
+		adaptf05.setForeground(darkblue);
+		adaptf05.setBorder(null);
+		adaptf05.setVisible(false);
+		frame.add(adaptf05);
+		
+		apALbl01 = new JLabel("Name");
+		apALbl01.setBounds(308,152,100,40);
+		apALbl01.setFont(inputLabelFont);
+		apALbl01.setVisible(false);
+		frame.add(apALbl01);
+		
+		apALbl02 = new JLabel("Age");
+		apALbl02.setBounds(562,152,100,40);
+		apALbl02.setFont(inputLabelFont);
+		apALbl02.setVisible(false);
+		frame.add(apALbl02);
+		
+		apALbl03 = new JLabel("Gender");
+		apALbl03.setBounds(687,152,100,40);
+		apALbl03.setFont(inputLabelFont);
+		apALbl03.setVisible(false);
+		frame.add(apALbl03);
+		
+		apALbl04 = new JLabel("Appointment Date");
+		apALbl04.setBounds(308,238,200,40);
+		apALbl04.setFont(inputLabelFont);
+		apALbl04.setVisible(false);
+		frame.add(apALbl04);
+		
+		apALbl05 = new JLabel("Time");
+		apALbl05.setBounds(546,238,100,40);
+		apALbl05.setFont(inputLabelFont);
+		apALbl05.setVisible(false);
+		frame.add(apALbl05);
+		
+		apALbl06 = new JLabel("Doctor Name");
+		apALbl06.setBounds(308,324,150,40);
+		apALbl06.setFont(inputLabelFont);
+		apALbl06.setVisible(false);
+		frame.add(apALbl06);
+		
+		apALbl07 = new JLabel("Phone");
+		apALbl07.setBounds(308,410,100,40);
+		apALbl07.setFont(inputLabelFont);
+		apALbl07.setVisible(false);
+		frame.add(apALbl07);
+		
+		adapABtn = new JButton("Add");
+		adapABtn.setBounds(800,490,80,40);
+		adapABtn.setFocusable(false);
+		adapABtn.setBackground(red);
+		adapABtn.setBorder(null);
+		adapABtn.setFont(btnFont);
+		adapABtn.addActionListener(this);
+		adapABtn.setVisible(false);
+		frame.add(adapABtn);
+		
+		adapBBtn = new JButton("Back");
+		adapBBtn.setBounds(686,490,80,40);
+		adapBBtn.setFocusable(false);
+		adapBBtn.setBackground(red);
+		adapBBtn.setBorder(null);
+		adapBBtn.setFont(btnFont);
+		adapBBtn.addActionListener(this);
+		adapBBtn.setVisible(false);
+		frame.add(adapBBtn);
+		
+//		Remove appointment section
+		
+//		rapTable = new JTable();
+//		rapTable.setBounds(287, 169, 600, 300);
+//		frame.add(rapTable);
+//		rapTable.setBackground(light01);
+//		rapTable.getTableHeader().setBackground(light02);
+//		rapSPane = new JScrollPane(rapTable);
+//		rapSPane.setBounds(287, 169, 600, 300);
+//		rapSPane.setBackground(light01);
+//		rapSPane.setBorder(null);
+//		frame.add(rapSPane);
+//		rapSPane.setVisible(false);
+		
+		rapBBtn = new JButton("Back");
+		rapBBtn.setBounds(288,490,80,40);
+		rapBBtn.setFocusable(false);
+		rapBBtn.setBackground(red);
+		rapBBtn.setBorder(null);
+		rapBBtn.setFont(btnFont);
+		rapBBtn.addActionListener(this);
+		rapBBtn.setVisible(false);
+		frame.add(rapBBtn);
+		
+		rapRBtn = new JButton("Remove");
+		rapRBtn.setBounds(800,490,80,40);
+		rapRBtn.setFocusable(false);
+		rapRBtn.setBackground(red);
+		rapRBtn.setBorder(null);
+		rapRBtn.setFont(btnFont);
+		rapRBtn.addActionListener(this);
+		rapRBtn.setVisible(false);
+		frame.add(rapRBtn);
+		
+		rapDBtn = new JButton("Display");
+		rapDBtn.setBounds(683,490,80,40);
+		rapDBtn.setFocusable(false);
+		rapDBtn.setBackground(red);
+		rapDBtn.setBorder(null);
+		rapDBtn.setFont(btnFont);
+		rapDBtn.addActionListener(this);
+		rapDBtn.setVisible(false);
+		frame.add(rapDBtn);
+		
+		
+		
+//		Appoinment List Section
+		
+//		aplTable = new JTable();
+//		aplTable.setBounds(287, 169, 600, 300);
+//		frame.add(aplTable);
+//		aplTable.setBackground(light01);
+//		aplTable.getTableHeader().setBackground(light02);
+//		aplSPane = new JScrollPane(aplTable);
+//		aplSPane.setBounds(287, 169, 600, 300);
+//		aplSPane.setBackground(light01);
+//		aplSPane.setBorder(null);
+//		frame.add(aplSPane);
+//		aplSPane.setVisible(false);
+		
+		aplBBtn = new JButton("Back");
+		aplBBtn.setBounds(288,490,80,40);
+		aplBBtn.setFocusable(false);
+		aplBBtn.setBackground(red);
+		aplBBtn.setBorder(null);
+		aplBBtn.setFont(btnFont);
+		aplBBtn.addActionListener(this);
+		aplBBtn.setVisible(false);
+		frame.add(aplBBtn);
+		
+		aplDBtn = new JButton("Display");
+		aplDBtn.setBounds(800,490,80,40);
+		aplDBtn.setFocusable(false);
+		aplDBtn.setBackground(red);
+		aplDBtn.setBorder(null);
+		aplDBtn.setFont(btnFont);
+		aplDBtn.addActionListener(this);
+		aplDBtn.setVisible(false);
+		frame.add(aplDBtn);
+		
+		
+//		Emergency Section
+		
+		emtf01 = new JTextField();
+		emtf01.setBounds(308,245,429,40);
+		emtf01.setFont(textFieldFont);
+		emtf01.setBackground(light02);
+		emtf01.setForeground(darkblue);
+		emtf01.setBorder(null);
+		emtf01.setVisible(false);
+		frame.add(emtf01);
+		
+		emta01 = new JTextArea();
+		emta01.setBounds(308,339,341,123);
+		emta01.setFont(textFieldFont);
+		emta01.setBackground(light02);
+		emta01.setForeground(darkblue);
+		emta01.setBorder(null);
+		emta01.setVisible(false);
+		frame.add(emta01);
+		
+		emLbl01 = new JLabel("Email Address");
+		emLbl01.setBounds(308,212,200,40);
+		emLbl01.setFont(inputLabelFont);
+		emLbl01.setVisible(false);
+		frame.add(emLbl01);
+		
+		emLbl02 = new JLabel("Case Information");
+		emLbl02.setBounds(308,306,200,40);
+		emLbl02.setFont(inputLabelFont);
+		emLbl02.setVisible(false);
+		frame.add(emLbl02);
+		
+		emMBtn = new JButton("Send");
+		emMBtn.setBounds(800,490,80,40);
+		emMBtn.setFocusable(false);
+		emMBtn.setBackground(red);
+		emMBtn.setBorder(null);
+		emMBtn.setFont(btnFont);
+		emMBtn.addActionListener(this);
+		emMBtn.setVisible(false);
+		frame.add(emMBtn);
+
+
+		
 		
 		mLbl01 = new JLabel("Profile");
 		mLbl01.setFont(activeBtnFont);
@@ -611,14 +1001,14 @@ public class AdminMain implements ActionListener, MouseListener{
 		mLbl01.addMouseListener(this);
 		frame.add(mLbl01);
 		
-		mLbl02 = new JLabel("Doctors");
+		mLbl02 = new JLabel("Doctor");
 		mLbl02.setFont(normalLabel);
 		mLbl02.setForeground(darkblue);
 		mLbl02.setBounds(54, 184, 80, 40);
 		mLbl02.addMouseListener(this);
 		frame.add(mLbl02);
 		
-		mLbl03 = new JLabel("Appointments");
+		mLbl03 = new JLabel("Appointment");
 		mLbl03.setFont(normalLabel);
 		mLbl03.setForeground(darkblue);
 		mLbl03.setBounds(54, 237, 130, 40);
@@ -854,6 +1244,18 @@ public class AdminMain implements ActionListener, MouseListener{
 		sBtn.setVisible(true);
 		bBtn.setVisible(true);
 		
+		eptf01.setBorder(null);
+		eptf02.setBorder(null);
+		eptf03.setBorder(null);
+		eptf04.setBorder(null);
+		eptf05.setBorder(null);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
+		
 		ilbl01.setVisible(false);
 		ilbl02.setVisible(false);
 		ilbl03.setVisible(false);
@@ -867,6 +1269,8 @@ public class AdminMain implements ActionListener, MouseListener{
 		eptf03.setVisible(true);
 		eptf04.setVisible(true);
 		eptf05.setVisible(true);
+		
+		
 		
 		String url = "jdbc:mysql://localhost:4206/dam";
 		try {
@@ -895,6 +1299,12 @@ public class AdminMain implements ActionListener, MouseListener{
 	}
 	
 	public void backProfileSection(int user) {
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
 		
 		ilbl01.setVisible(true);
 		ilbl02.setVisible(true);
@@ -939,43 +1349,140 @@ public class AdminMain implements ActionListener, MouseListener{
 	
 	public void updateProfile(int user) {
 		
-		String url = "jdbc:mysql://localhost:4206/dam";
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			Connection con = DriverManager.getConnection(url, "dam", "");
+		String f_name = eptf01.getText();
+		String l_name = eptf02.getText();
+		String email = eptf03.getText();
+		String phone = eptf04.getText();
+		String area = eptf05.getText();
+		
+		String nameRegex = "^[A-Z]{1}[a-z]{1,100}$";
+		String emailRegex = "^[a-z0-9]+@[a-z]+(\\.[a-z]+)+$";
+		String phoneRegex = "^(\\+88)?01[2-9]\\d{8}$";
+		String addRegex = "^[A-Za-z0-9]{1,200}$";
+		
+		Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
+		
+		eptf01.setBorder(null);
+		eptf02.setBorder(null);
+		eptf03.setBorder(null);
+		eptf04.setBorder(null);
+		eptf05.setBorder(null);
+		
+		if(eptf01.getText().length() == 0) {
 			
-			Statement st = con.createStatement();
+			errLbl01.setVisible(true);
+			eptf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("enter first name");
+			errLbl01.setBounds(536, 256, 120, 40);
 			
-			ResultSet rss = st.executeQuery("select `first_name`,`last_name`,`email`,`phone`,`area` from `registration` where admin_id = '"+user+"'");
+		}else if(eptf01.getText().length() > 0 && !Pattern.matches(nameRegex, f_name)) {
 			
-			rss.next();
-			titleName.setText(rss.getString(1) + " " + rss.getString(2));
-			String f_name = eptf01.getText();
-			String l_name = eptf02.getText();
-			String email = eptf03.getText();
-			String phone = eptf04.getText();
-			String area = eptf05.getText();
+			errLbl01.setVisible(true);
+			eptf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("invalid name");
+			errLbl01.setBounds(536, 256, 120, 40);
 			
-			int rsss = st.executeUpdate("UPDATE `registration` SET `first_name`='"+f_name+"',`last_name`='"+l_name+"',`email`='"+email+"',`phone`='"+phone+"',`area`='"+area+"' WHERE `admin_id` = '"+user+"'");
+		}else if(eptf02.getText().length() == 0) {
 			
-			if(rsss > 0) {
-				JOptionPane.showMessageDialog(null, "profile updated","message",JOptionPane.INFORMATION_MESSAGE);
-			}else {
-				System.out.println("something went wrong");
+			errLbl02.setVisible(true);
+			eptf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("enter last name");
+			errLbl02.setBounds(536, 302, 120, 40);
+			
+		}else if(eptf02.getText().length() > 0 && !Pattern.matches(nameRegex, l_name)) {
+			
+			errLbl02.setVisible(true);
+			eptf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("invalid name");
+			errLbl02.setBounds(536, 302, 120, 40);
+			
+		}else if(eptf03.getText().length() == 0) {
+			
+			errLbl03.setVisible(true);
+			eptf03.setBorder(inpuErrorBorder);
+			errLbl03.setText("enter email");
+			errLbl03.setBounds(536, 349, 120, 40);
+			
+		}else if(eptf03.getText().length() > 0 && !Pattern.matches(emailRegex, email)) {
+			
+			errLbl03.setVisible(true);
+			eptf03.setBorder(inpuErrorBorder);
+			errLbl03.setText("invalid email");
+			errLbl03.setBounds(536, 349, 120, 40);
+			
+		}else if(eptf04.getText().length() == 0) {
+			
+			errLbl04.setVisible(true);
+			eptf04.setBorder(inpuErrorBorder);
+			errLbl04.setText("enter phone");
+			errLbl04.setBounds(536, 396, 120, 40);
+			
+		}else if(eptf04.getText().length() > 0 && !Pattern.matches(phoneRegex, phone)) {
+			
+			errLbl04.setVisible(true);
+			eptf04.setBorder(inpuErrorBorder);
+			errLbl04.setText("invalid email");
+			errLbl04.setBounds(536, 396, 120, 40);
+			
+		}else if(eptf05.getText().length() == 0) {
+			
+			errLbl05.setVisible(true);
+			eptf05.setBorder(inpuErrorBorder);
+			errLbl05.setText("enter area");
+			errLbl05.setBounds(536, 446, 120, 40);
+			
+		}else if(eptf05.getText().length() > 0 && !Pattern.matches(addRegex, area)) {
+			
+			errLbl05.setVisible(true);
+			eptf05.setBorder(inpuErrorBorder);
+			errLbl05.setText("invalid area");
+			errLbl05.setBounds(536, 446, 120, 40);
+			
+		}else {
+		
+			String url = "jdbc:mysql://localhost:4206/dam";
+			try {
+				Class.forName("com.mysql.cj.jdbc.Driver");
+				Connection con = DriverManager.getConnection(url, "dam", "");
+				
+				Statement st = con.createStatement();
+				
+				ResultSet rss = st.executeQuery("select `first_name`,`last_name`,`email`,`phone`,`area` from `registration` where admin_id = '"+user+"'");
+				
+				rss.next();
+				titleName.setText(rss.getString(1) + " " + rss.getString(2));
+				
+				
+				int rsss = st.executeUpdate("UPDATE `registration` SET `first_name`='"+f_name+"',`last_name`='"+l_name+"',`email`='"+email+"',`phone`='"+phone+"',`area`='"+area+"' WHERE `admin_id` = '"+user+"'");
+				
+				if(rsss > 0) {
+					JOptionPane.showMessageDialog(null, "profile updated","message",JOptionPane.INFORMATION_MESSAGE);
+					
+					frame.dispose();
+					new AdminMain(user);
+					
+				}else {
+					System.out.println("something went wrong");
+				}
+				
+				
+				st.close();
+				con.close();
+				
+			} catch (ClassNotFoundException | SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-			
-			
-			st.close();
-			con.close();
-			
-		} catch (ClassNotFoundException | SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
-		frame.dispose();
-		new AdminMain(user);
 		
 	}
+	
 	
 	public void backtoProfile(int user) {
 		
@@ -994,10 +1501,127 @@ public class AdminMain implements ActionListener, MouseListener{
 			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-SemiBoldItalic.ttf")));
 		} catch(IOException | FontFormatException e) {
 		}
+		
+		adaptf01.setBorder(null);
+		adaptf02.setBorder(null);
+		adaptf03.setBorder(null);
+		adaptf04.setBorder(null);
+		adaptf05.setBorder(null);
+		adaptf01.setText(null);
+		adaptf02.setText(null);
+		adaptf03.setText(null);
+		adaptf04.setText(null);
+		adaptf05.setText(null);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		emtf01.setBorder(null);
+		emta01.setBorder(null);
+		emtf01.setText(null);
+		emta01.setText(null);
+		
+		sptf01.setText(null);
+		sptf02.setText(null);
+		
+		udtf01.setText(null);
+		udtf02.setText(null);
+		udtf03.setText(null);
+		udtf04.setText(null);
+		udtf05.setText(null);
+		
+		udtf01.setBorder(null);
+		udtf02.setBorder(null);
+		udtf03.setBorder(null);
+		udtf04.setBorder(null);
+		udtf05.setBorder(null);
+		
+		rdtf01.setText(null);
+		rdtf02.setText(null);
+		rdtf03.setText(null);
+		rdtf04.setText(null);
+		rdtf01.requestFocus();
+		
+		rdtf01.setBorder(null);
+		rdtf02.setBorder(null);
+		rdtf03.setBorder(null);
+		rdtf04.setBorder(null);
+		
+		adtf01.setText(null);
+		adtf02.setText(null);
+		adtf03.setText(null);
+		adtf04.setText(null);
+		adtf05.setText(null);
+		adtf01.requestFocus();
+		
+		adtf01.setBorder(null);
+		adtf02.setBorder(null);
+		adtf03.setBorder(null);
+		adtf04.setBorder(null);
+		adtf05.setBorder(null);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
+		
+		emLbl01.setVisible(false);
+		emLbl02.setVisible(false);
+		emtf01.setVisible(false);
+		emta01.setVisible(false);
+		emMBtn.setVisible(false);
+		
+		dtable.setVisible(false);
+		jtpane.setVisible(false);
+		rapBBtn.setVisible(false);
+		rapRBtn.setVisible(false);
+		rapDBtn.setVisible(false);
+		
+		aplBBtn.setVisible(false);
+		aplDBtn.setVisible(false);
+		
+		apALbl01.setVisible(false);
+		apALbl02.setVisible(false);
+		apALbl03.setVisible(false);
+		apALbl04.setVisible(false);
+		apALbl05.setVisible(false);
+		apALbl06.setVisible(false);
+		apALbl07.setVisible(false);
+		
+		adapABtn.setVisible(false);
+		adapBBtn.setVisible(false);
+		
+		adaptf01.setVisible(false);
+		adaptf02.setVisible(false);
+		adaptf03.setVisible(false);
+		adaptf04.setVisible(false);
+		adaptf05.setVisible(false);
+		
+		gcb.setVisible(false);
+		tcb.setVisible(false);
+		
+		
+		apMLbl01.setVisible(false);
+		apMLbl02.setVisible(false);
+		apMLbl03.setVisible(false);
+		
+		
 		rdtf01.setVisible(false);
 		rdtf02.setVisible(false);
 		rdtf03.setVisible(false);
 		rdtf04.setVisible(false);
+		
+		dlDBtn.setVisible(false);
+		dlBBtn.setVisible(false);
+		
+		jtpane.setVisible(false);
+		
+		spLbl01.setVisible(false);
+		spLbl02.setVisible(false);
+		sptf01.setVisible(false);
+		sptf02.setVisible(false);
+		spCBtn.setVisible(false);
+		spBBtn.setVisible(false);
 		
 		rdLbl01.setVisible(false);
 		rdLbl02.setVisible(false);
@@ -1091,11 +1715,15 @@ public class AdminMain implements ActionListener, MouseListener{
 		Font rglrFont = font01.deriveFont(15f);
 		Font textFieldFont = font01.deriveFont(14f);
 		
+		mLbl04.setFont(normalLabel);
+		mLbl04.setBounds(54, 290, 150, 40);
 		mLbl02.setFont(normalLabel);
 		mLbl02.setBounds(54, 184, 80, 40);
 		mLbl01.setBounds(74, 133, 80, 40);
 		mLbl01.setFont(activeBtnFont);
 		aPanel.setBounds(0,142,60,22);
+		mLbl03.setBounds(54, 237, 150, 40);
+		mLbl03.setFont(normalLabel);
 		
 		ilbl01.setVisible(true);
 		ilbl02.setVisible(true);
@@ -1115,6 +1743,7 @@ public class AdminMain implements ActionListener, MouseListener{
 		title.setVisible(true);
 		display.setVisible(true);
 	}
+	
 	
 	public void DoctorSection() {
 		
@@ -1141,14 +1770,124 @@ public class AdminMain implements ActionListener, MouseListener{
 		Font rglrFont = font01.deriveFont(15f);
 		Font textFieldFont = font01.deriveFont(14f);
 		
+		adaptf01.setBorder(null);
+		adaptf02.setBorder(null);
+		adaptf03.setBorder(null);
+		adaptf04.setBorder(null);
+		adaptf05.setBorder(null);
+		adaptf01.setText(null);
+		adaptf02.setText(null);
+		adaptf03.setText(null);
+		adaptf04.setText(null);
+		adaptf05.setText(null);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		emtf01.setBorder(null);
+		emta01.setBorder(null);
+		emtf01.setText(null);
+		emta01.setText(null);
+		
+		sptf01.setText(null);
+		sptf02.setText(null);
+		
+		udtf01.setText(null);
+		udtf02.setText(null);
+		udtf03.setText(null);
+		udtf04.setText(null);
+		udtf05.setText(null);
+		
+		udtf01.setBorder(null);
+		udtf02.setBorder(null);
+		udtf03.setBorder(null);
+		udtf04.setBorder(null);
+		udtf05.setBorder(null);
+		
+		
+		rdtf01.setText(null);
+		rdtf02.setText(null);
+		rdtf03.setText(null);
+		rdtf04.setText(null);
+		rdtf01.requestFocus();
+		
+		adtf01.setText(null);
+		adtf02.setText(null);
+		adtf03.setText(null);
+		adtf04.setText(null);
+		adtf05.setText(null);
+		adtf01.requestFocus();
+		
+		mLbl04.setFont(normalLabel);
+		mLbl04.setBounds(54, 290, 150, 40);
 		mLbl02.setFont(activeBtnFont);
 		mLbl02.setBounds(74, 184, 80, 40);
 		mLbl01.setBounds(54, 133, 80, 40);
 		mLbl01.setFont(normalLabel);
 		aPanel.setBounds(0,193,60,22);
+		mLbl03.setBounds(54, 237, 150, 40);
+		mLbl03.setFont(normalLabel);
 		
-		dTLbl.setVisible(true);
+		dTLbl.setText("Doctor");
+		dTLbl.setBounds(274, 10, 500, 115);
 		
+		
+		model = (DefaultTableModel) dtable.getModel();
+		model.setRowCount(0);
+		
+		adtf01.setBorder(null);
+		adtf02.setBorder(null);
+		adtf03.setBorder(null);
+		adtf04.setBorder(null);
+		adtf05.setBorder(null);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
+		
+		
+		emLbl01.setVisible(false);
+		emLbl02.setVisible(false);
+		emtf01.setVisible(false);
+		emta01.setVisible(false);
+		emMBtn.setVisible(false);
+		
+		
+		dtable.setVisible(false);
+		jtpane.setVisible(false);
+		rapBBtn.setVisible(false);
+		rapRBtn.setVisible(false);
+		rapDBtn.setVisible(false);
+		
+		aplBBtn.setVisible(false);
+		aplDBtn.setVisible(false);
+		
+		apALbl01.setVisible(false);
+		apALbl02.setVisible(false);
+		apALbl03.setVisible(false);
+		apALbl04.setVisible(false);
+		apALbl05.setVisible(false);
+		apALbl06.setVisible(false);
+		apALbl07.setVisible(false);
+		
+		adapABtn.setVisible(false);
+		adapBBtn.setVisible(false);
+		
+		adaptf01.setVisible(false);
+		adaptf02.setVisible(false);
+		adaptf03.setVisible(false);
+		adaptf04.setVisible(false);
+		adaptf05.setVisible(false);
+		
+		gcb.setVisible(false);
+		tcb.setVisible(false);
+		
+		
+		dlDBtn.setVisible(false);
+		dlBBtn.setVisible(false);
+		
+		jtpane.setVisible(false);
 		
 		adtf01.setVisible(false);
 		adtf02.setVisible(false);
@@ -1166,7 +1905,7 @@ public class AdminMain implements ActionListener, MouseListener{
 		adBBtn.setVisible(false);
 		
 		
-		
+		dTLbl.setVisible(true);
 		dpnl01.setVisible(true);
 		dpnl02.setVisible(true);
 		dpnl03.setVisible(true);
@@ -1184,6 +1923,804 @@ public class AdminMain implements ActionListener, MouseListener{
 		dLbl05.addMouseListener(this);
 		dLbl01.addMouseListener(this);
 		
+		
+		rdtf01.setVisible(false);
+		rdtf02.setVisible(false);
+		rdtf03.setVisible(false);
+		rdtf04.setVisible(false);
+		
+		rdLbl01.setVisible(false);
+		rdLbl02.setVisible(false);
+		rdLbl03.setVisible(false);
+		rdLbl04.setVisible(false);    
+		
+		rdRBtn.setVisible(false);
+		rdBBtn.setVisible(false);
+		
+		
+		ud01tf02.setVisible(false);
+		ud01tf01.setVisible(false);
+		ud01Lbl02.setVisible(false);
+		ud01Lbl01.setVisible(false);
+		udBBtn.setVisible(false);
+		udNBtn.setVisible(false);
+		
+		
+		udtf01.setVisible(false);
+		udtf02.setVisible(false);
+		udtf03.setVisible(false);
+		udtf04.setVisible(false);
+		udtf05.setVisible(false);
+		
+		udLbl01.setVisible(false);
+		udLbl02.setVisible(false);
+		udLbl03.setVisible(false);
+		udLbl04.setVisible(false);
+		udLbl05.setVisible(false);
+		
+		uddBBtn.setVisible(false);
+		udBtn.setVisible(false);
+		
+		spLbl01.setVisible(false);
+		spLbl02.setVisible(false);
+		sptf01.setVisible(false);
+		sptf02.setVisible(false);
+		spCBtn.setVisible(false);
+		spBBtn.setVisible(false);
+		
+		apMLbl01.setVisible(false);
+		apMLbl02.setVisible(false);
+		apMLbl03.setVisible(false);
+		
+		
+		ilbl01.setVisible(false);
+		ilbl02.setVisible(false);
+		ilbl03.setVisible(false);
+		ilbl04.setVisible(false);
+		ilbl05.setVisible(false);
+		
+		lbl01.setVisible(false);
+		lbl02.setVisible(false);
+		lbl03.setVisible(false);
+		lbl04.setVisible(false);
+		lbl05.setVisible(false);
+		
+		logoutBtn.setVisible(false);
+		editProfBtn.setVisible(false);
+		titleName.setVisible(false);
+		title.setVisible(false);
+		display.setVisible(false);
+		
+		eptf01.setVisible(false);
+		eptf02.setVisible(false);
+		eptf03.setVisible(false);
+		eptf04.setVisible(false);
+		eptf05.setVisible(false);
+		sBtn.setVisible(false);
+		bBtn.setVisible(false);
+		
+	}
+	
+	public void AddDoctorSection() {
+		dpnl03.setVisible(false);
+		
+		dLbl01.setVisible(false);
+		dLbl02.setVisible(false);
+		dLbl03.setVisible(false);
+		dLbl04.setVisible(false);
+		dLbl05.setVisible(false);
+		
+		adtf01.setVisible(true);
+		adtf02.setVisible(true);
+		adtf03.setVisible(true);
+		adtf04.setVisible(true);
+		adtf05.setVisible(true);
+		
+		adLbl01.setVisible(true);
+		adLbl02.setVisible(true);
+		adLbl03.setVisible(true);
+		adLbl04.setVisible(true);
+		adLbl05.setVisible(true);
+		
+		adBtn.setVisible(true);
+		adBBtn.setVisible(true);
+	}
+	
+	
+	public void addDoctortoDB() {
+		
+		String docName = adtf02.getText();
+		String Field = adtf03.getText();
+		String email = adtf04.getText();
+		String BMDCID = adtf01.getText();
+		String phone = adtf05.getText();
+		
+		String nameRegex = "^[A-Za-z ]{1,200}$";
+		String emailRegex = "^[a-z0-9]+@[a-z]+(\\.[a-z]+)+$";
+		String phoneRegex = "^(\\+88)?01[2-9]\\d{8}$";
+		String idRegex = "^[A-Z]{2}[0-9]{4}$";
+		
+		Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
+		
+		adtf01.setBorder(null);
+		adtf02.setBorder(null);
+		adtf03.setBorder(null);
+		adtf04.setBorder(null);
+		adtf05.setBorder(null);
+		
+		
+		if(adtf01.getText().length() == 0) {
+			
+			errLbl01.setVisible(true);
+			adtf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("enter BMDC ID");
+			errLbl01.setBounds(311, 218, 120, 40);
+			
+		}else if(adtf01.getText().length() > 0 && !Pattern.matches(idRegex, BMDCID)) {
+			
+			errLbl01.setVisible(true);
+			adtf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("invalid BMDC ID");
+			errLbl01.setBounds(311, 218, 120, 40);
+			
+		}else if(adtf02.getText().length() == 0) {
+
+			errLbl02.setVisible(true);
+			adtf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("enter name");
+			errLbl02.setBounds(510, 218, 120, 40);
+			
+		}else if(adtf02.getText().length() > 0 && !Pattern.matches(nameRegex, docName)) {
+			
+			errLbl02.setVisible(true);
+			adtf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("invalid name");
+			errLbl02.setBounds(510, 218, 120, 40);
+			
+		}else if(adtf03.getText().length() == 0) {
+			
+			errLbl03.setVisible(true);
+			adtf03.setBorder(inpuErrorBorder);
+			errLbl03.setText("enter field");
+			errLbl03.setBounds(311, 304, 120, 40);
+			
+		}else if(adtf03.getText().length() > 0 && !Pattern.matches(nameRegex, Field)) {
+			
+			errLbl03.setVisible(true);
+			adtf03.setBorder(inpuErrorBorder);
+			errLbl03.setText("invalid field");
+			errLbl03.setBounds(311, 304, 120, 40);
+			
+		}else if(adtf04.getText().length() == 0) {
+			
+			errLbl04.setVisible(true);
+			adtf04.setBorder(inpuErrorBorder);
+			errLbl04.setText("enter email");
+			errLbl04.setBounds(311, 390, 120, 40);
+			
+		}else if(adtf04.getText().length() > 0 && !Pattern.matches(emailRegex, email)) {
+			
+			errLbl04.setVisible(true);
+			adtf04.setBorder(inpuErrorBorder);
+			errLbl04.setText("invalid email");
+			errLbl04.setBounds(311, 390, 120, 40);
+			
+		}else if(adtf05.getText().length() == 0) {
+			
+			errLbl05.setVisible(true);
+			adtf05.setBorder(inpuErrorBorder);
+			errLbl05.setText("enter phone");
+			errLbl05.setBounds(311, 476, 120, 40);
+			
+		}else if(adtf05.getText().length() > 0 && !Pattern.matches(phoneRegex, phone)) {
+			
+			errLbl05.setVisible(true);
+			adtf05.setBorder(inpuErrorBorder);
+			errLbl05.setText("invalid phone");
+			errLbl05.setBounds(311, 476, 120, 40);
+			
+		}else {
+			String url = "jdbc:mysql://localhost:4206/dam";
+			
+			try {
+				Class.forName("com.mysql.cj.jdbc.Driver");
+				Connection con = DriverManager.getConnection(url, "dam", "");
+				
+				Statement st = con.createStatement();
+				
+				ResultSet rss = st.executeQuery("select `email`,`phone`,`passcode` from `doctor`");
+				boolean duplicacy = false;
+				
+				while(rss.next()) {
+					if(rss.getString(1).equals(email) || rss.getString(2).equals(phone)) {
+						duplicacy = true;
+					}
+					
+				}
+				
+				if(duplicacy != true) {
+					int rs = st.executeUpdate("INSERT INTO `doctor`(`bmdc_id`, `doc_name`, `field`, `email`, `phone`) VALUES ('"+BMDCID+"','"+docName+"','"+Field+"','"+email+"','"+phone+"')");
+					
+					if(rs > 0) {
+						adtf01.setText(null);
+						adtf02.setText(null);
+						adtf03.setText(null);
+						adtf04.setText(null);
+						adtf05.setText(null);
+						adtf01.requestFocus();
+						
+					}else {
+						System.out.println("Not Inserted");
+					}
+				}else {
+					JOptionPane.showMessageDialog(null, "Already registered","Warning",JOptionPane.WARNING_MESSAGE);
+					adtf01.setText(null);
+					adtf02.setText(null);
+					adtf03.setText(null);
+					adtf04.setText(null);
+					adtf05.setText(null);
+					adtf01.requestFocus();
+				}
+				st.close();
+				con.close();
+				
+			} catch (ClassNotFoundException | SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	
+	public void RemoveDoctorSection() {
+		rdtf01.setBorder(null);
+		rdtf02.setBorder(null);
+		rdtf03.setBorder(null);
+		rdtf04.setBorder(null);
+		
+		dpnl03.setVisible(false);
+		
+		dLbl01.setVisible(false);
+		
+		dLbl02.setVisible(false);
+		dLbl03.setVisible(false);
+		dLbl04.setVisible(false);
+		dLbl05.setVisible(false);
+		
+		rdtf01.setVisible(true);
+		rdtf02.setVisible(true);
+		rdtf03.setVisible(true);
+		rdtf04.setVisible(true);
+		
+		rdLbl01.setVisible(true);
+		rdLbl02.setVisible(true);
+		rdLbl03.setVisible(true);
+		rdLbl04.setVisible(true);    
+		
+		rdRBtn.setVisible(true);
+		rdBBtn.setVisible(true);
+	}
+	
+	
+	public void RemoveDocFromDB() {
+		
+		String dName = rdtf02.getText();
+		String field = rdtf03.getText();
+		String email = rdtf04.getText();
+		String BMDCID = rdtf01.getText();
+		
+		String nameRegex = "^[A-Za-z ]{1,200}$";
+		String emailRegex = "^[a-z0-9]+@[a-z]+(\\.[a-z]+)+$";
+		String phoneRegex = "^(\\+88)?01[2-9]\\d{8}$";
+		String idRegex = "^[A-Z]{2}[0-9]{4}$";
+		
+		Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
+		
+		rdtf01.setBorder(null);
+		rdtf02.setBorder(null);
+		rdtf03.setBorder(null);
+		rdtf04.setBorder(null);
+		
+		if(rdtf01.getText().length() == 0) {
+			
+			errLbl01.setVisible(true);
+			rdtf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("enter BMDC ID");
+			errLbl01.setBounds(311, 218, 120, 40);
+			
+		}else if(rdtf01.getText().length() > 0 && !Pattern.matches(idRegex, BMDCID)) {
+			
+			errLbl01.setVisible(true);
+			rdtf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("invalid BMDC ID");
+			errLbl01.setBounds(311, 218, 120, 40);
+			
+		}else if(rdtf02.getText().length() == 0) {
+			
+			errLbl02.setVisible(true);
+			rdtf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("enter name");
+			errLbl02.setBounds(510, 218, 120, 40);
+			
+		}else if(rdtf02.getText().length() > 0 && !Pattern.matches(nameRegex, dName)) {
+			
+			errLbl02.setVisible(true);
+			rdtf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("invalid name");
+			errLbl02.setBounds(510, 218, 120, 40);
+			
+		}else if(rdtf03.getText().length() == 0) {
+			
+			errLbl03.setVisible(true);
+			rdtf03.setBorder(inpuErrorBorder);
+			errLbl03.setText("enter field");
+			errLbl03.setBounds(311, 303, 120, 40);
+			
+		}else if(rdtf03.getText().length() > 0 && !Pattern.matches(nameRegex, field)) {
+			
+			errLbl03.setVisible(true);
+			rdtf03.setBorder(inpuErrorBorder);
+			errLbl03.setText("invalid field");
+			errLbl03.setBounds(311, 303, 120, 40);
+			
+		}else if(rdtf04.getText().length() == 0) {
+			
+			errLbl04.setVisible(true);
+			rdtf04.setBorder(inpuErrorBorder);
+			errLbl04.setText("enter email");
+			errLbl04.setBounds(311, 392, 120, 40);
+			
+		}else if(rdtf04.getText().length() > 0 && !Pattern.matches(emailRegex, email)) {
+			
+			errLbl04.setVisible(true);
+			rdtf04.setBorder(inpuErrorBorder);
+			errLbl04.setText("invalid field");
+			errLbl04.setBounds(311, 392, 120, 40);
+			
+		}else {
+			String url = "jdbc:mysql://localhost:4206/dam";
+			try {
+				Class.forName("com.mysql.cj.jdbc.Driver");
+				Connection con = DriverManager.getConnection(url, "dam", "");
+				
+				Statement st = con.createStatement();
+				
+				int rs = st.executeUpdate("DELETE FROM `doctor` WHERE bmdc_id = '"+BMDCID+"'");
+				
+				if(rs > 0) {
+					JOptionPane.showMessageDialog(null, "Doctor Removed","Warning",JOptionPane.WARNING_MESSAGE);
+				}else {
+					JOptionPane.showMessageDialog(null, "Something went wrong","Warning",JOptionPane.WARNING_MESSAGE);
+				}
+				
+				rdtf01.setText(null);
+				rdtf02.setText(null);
+				rdtf03.setText(null);
+				rdtf04.setText(null);
+				rdtf01.requestFocus();
+				
+				st.close();
+				con.close();
+				
+			} catch (ClassNotFoundException | SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	
+	public void UpdateDoctorSection1() {
+		
+		dpnl03.setVisible(false);
+		
+		dLbl01.setVisible(false);
+		
+		dLbl02.setVisible(false);
+		dLbl03.setVisible(false);
+		dLbl04.setVisible(false);
+		dLbl05.setVisible(false);
+		
+		ud01tf02.setVisible(true);
+		ud01tf01.setVisible(true);
+		ud01Lbl02.setVisible(true);
+		ud01Lbl01.setVisible(true);
+		udBBtn.setVisible(true);
+		udNBtn.setVisible(true);
+	}
+	
+	
+	public void UpdateDoctorSection2(int docID) {
+		
+		updocID = docID;
+		
+		udtf01.setVisible(true);
+		udtf02.setVisible(true);
+		udtf03.setVisible(true);
+		udtf04.setVisible(true);
+		udtf05.setVisible(true);
+		
+		udLbl01.setVisible(true);
+		udLbl02.setVisible(true);
+		udLbl03.setVisible(true);
+		udLbl04.setVisible(true);
+		udLbl05.setVisible(true);
+		
+		uddBBtn.setVisible(true);
+		udBtn.setVisible(true);
+		
+		ud01tf02.setVisible(false);
+		ud01tf01.setVisible(false);
+		ud01Lbl02.setVisible(false);
+		ud01Lbl01.setVisible(false);
+		udBBtn.setVisible(false);
+		udNBtn.setVisible(false);
+		
+		
+		String url = "jdbc:mysql://localhost:4206/dam";
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection(url, "dam", "");
+			
+			Statement st = con.createStatement();
+			
+			ResultSet rss = st.executeQuery("select `bmdc_id`,`doc_name`,`field`,`email`,`phone` from `doctor` where doctor_id = '"+docID+"'");
+			
+			rss.next();
+			udtf01.setText(rss.getString(1));
+			udtf02.setText(rss.getString(2));
+			udtf03.setText(rss.getString(3));
+			udtf04.setText(rss.getString(4));
+			udtf05.setText(rss.getString(5));
+			
+			st.close();
+			con.close();
+			
+		} catch (ClassNotFoundException | SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+	}
+	
+	public void SetPassSection() {
+		
+		dpnl03.setVisible(false);
+		
+		dLbl01.setVisible(false);
+		
+		dLbl02.setVisible(false);
+		dLbl03.setVisible(false);
+		dLbl04.setVisible(false);
+		dLbl05.setVisible(false);
+		
+		spLbl01.setVisible(true);
+		spLbl02.setVisible(true);
+		sptf01.setVisible(true);
+		sptf02.setVisible(true);
+		spCBtn.setVisible(true);
+		spBBtn.setVisible(true);
+	}
+	
+	
+	public void UpdatePasscode() {
+		
+		String PrePass = sptf01.getText();
+		String NewPass = sptf02.getText();
+		
+		Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
+		
+		String passRegex = "^[0-9]{6}$";
+		
+		if(sptf01.getText().length() == 0) {
+			
+			errLbl01.setVisible(true);
+			sptf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("enter previous passcode");
+			errLbl01.setBounds(485, 295, 200, 40);
+			
+		}else if(sptf01.getText().length() > 0 && !Pattern.matches(passRegex, PrePass)) {
+			
+			errLbl01.setVisible(true);
+			sptf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("invalid passcode");
+			errLbl01.setBounds(485, 295, 200, 40);
+			
+		}else if(sptf02.getText().length() == 0) {
+			
+			errLbl02.setVisible(true);
+			sptf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("enter new passcode");
+			errLbl02.setBounds(485, 390, 200, 40);
+			
+		}else if(sptf02.getText().length() > 0 && !Pattern.matches(passRegex, PrePass)) {
+			
+			errLbl02.setVisible(true);
+			sptf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("invalid passcode");
+			errLbl02.setBounds(485, 390, 200, 40);
+			
+		}else {
+			
+			String url = "jdbc:mysql://localhost:4206/dam";
+			try {
+				Class.forName("com.mysql.cj.jdbc.Driver");
+				Connection con = DriverManager.getConnection(url, "dam", "");
+				
+				Statement st = con.createStatement();
+				
+				int rs = st.executeUpdate("UPDATE `doctor` SET `passcode`='"+NewPass+"' WHERE passcode = '"+PrePass+"'");
+				
+				if(rs > 0) {
+					JOptionPane.showMessageDialog(null, "Passcode Updated","Warning",JOptionPane.WARNING_MESSAGE);
+					sptf01.setText(null);
+					sptf02.setText(null);
+					sptf01.requestFocus();
+				}else {
+					JOptionPane.showMessageDialog(null, "Something went wrong","Warning",JOptionPane.WARNING_MESSAGE);
+					sptf01.setText(null);
+					sptf02.setText(null);
+					sptf01.requestFocus();
+				}
+				
+				sptf01.setText(null);
+				sptf02.setText(null);
+				DoctorSection();
+				
+				st.close();
+				con.close();
+				
+			} catch (ClassNotFoundException | SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	public void doctorList() {
+		
+		dpnl03.setVisible(false);
+		
+		dLbl01.setVisible(false);
+		
+		dLbl02.setVisible(false);
+		dLbl03.setVisible(false);
+		dLbl04.setVisible(false);
+		dLbl05.setVisible(false);
+		
+		dlDBtn.setVisible(true);
+		dlBBtn.setVisible(true);
+		dtable.setVisible(true);
+		jtpane.setVisible(true);
+	}
+	
+	
+	public void displayList() {
+		if(model.getRowCount() == 0) {
+		String url = "jdbc:mysql://localhost:4206/dam";
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection(url, "dam", "");
+			
+			Statement st = con.createStatement();
+			
+			ResultSet rs = st.executeQuery("SELECT `bmdc_id`, `doc_name`, `field`, `email`, `phone` FROM `doctor`");
+			ResultSetMetaData rsmd = rs.getMetaData();
+			model = (DefaultTableModel) dtable.getModel();
+			
+			int col = rsmd.getColumnCount();
+			String[] colName = new String[col];
+			
+			for(int i = 0; i < col; i++) 
+				colName[i] = rsmd.getColumnName(i+1);
+			model.setColumnIdentifiers(colName);
+			
+			String BMDCID, dName, field, email, phone;
+			
+			while(rs.next()) {
+				BMDCID = rs.getString(1);
+				dName = rs.getString(2);
+				field = rs.getString(3);
+				email = rs.getString(4);
+				phone = rs.getString(5);
+				String[] row = {BMDCID,dName,field,email,phone};
+				model.addRow(row);
+			}
+			
+			st.close();
+			con.close();
+			
+		} catch (ClassNotFoundException | SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		}
+	}
+	
+	
+	
+	public void AppoinmentSection() {
+		try {
+			font01 = Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Regular.ttf"));
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Regular.ttf")));
+			
+			font02 = Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Bold.ttf"));
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Bold.ttf")));
+			
+			font03 = Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Lightitalic.ttf"));
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Lightitalic.ttf")));
+			
+			font04 = Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-SemiBoldItalic.ttf"));
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-SemiBoldItalic.ttf")));
+		} catch(IOException | FontFormatException e) {
+		}
+		
+		Font activeBtnFont = font02.deriveFont(20f);
+		Font normalLabel = font02.deriveFont(16f);
+		Font titleNameFont = font02.deriveFont(32f);
+		Font btnFont = font02.deriveFont(12f);
+		Font rglrFont = font01.deriveFont(15f);
+		Font textFieldFont = font01.deriveFont(14f);
+		
+		mLbl04.setFont(normalLabel);
+		mLbl04.setBounds(54, 290, 150, 40);
+		mLbl03.setFont(activeBtnFont);
+		mLbl03.setBounds(74, 237, 150, 40);
+		mLbl02.setBounds(54, 184, 80, 40);
+		mLbl02.setFont(normalLabel);
+		aPanel.setBounds(0,246,60,22);
+		mLbl01.setBounds(54, 133, 80, 40);
+		mLbl01.setFont(normalLabel);
+		
+		dTLbl.setText("Appointment");
+		dTLbl.setBounds(125, 10, 700, 100);
+		
+		adaptf01.setBorder(null);
+		adaptf02.setBorder(null);
+		adaptf03.setBorder(null);
+		adaptf04.setBorder(null);
+		adaptf05.setBorder(null);
+		adaptf01.setText(null);
+		adaptf02.setText(null);
+		adaptf03.setText(null);
+		adaptf04.setText(null);
+		adaptf05.setText(null);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		emtf01.setBorder(null);
+		emta01.setBorder(null);
+		emtf01.setText(null);
+		emta01.setText(null);
+		
+		sptf01.setText(null);
+		sptf02.setText(null);
+		
+		udtf01.setText(null);
+		udtf02.setText(null);
+		udtf03.setText(null);
+		udtf04.setText(null);
+		udtf05.setText(null);
+		
+		udtf01.setBorder(null);
+		udtf02.setBorder(null);
+		udtf03.setBorder(null);
+		udtf04.setBorder(null);
+		udtf05.setBorder(null);
+		
+		
+		rdtf01.setText(null);
+		rdtf02.setText(null);
+		rdtf03.setText(null);
+		rdtf04.setText(null);
+		rdtf01.requestFocus();
+		
+		rdtf01.setBorder(null);
+		rdtf02.setBorder(null);
+		rdtf03.setBorder(null);
+		rdtf04.setBorder(null);
+		
+		adtf01.setText(null);
+		adtf02.setText(null);
+		adtf03.setText(null);
+		adtf04.setText(null);
+		adtf05.setText(null);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
+		
+		emLbl01.setVisible(false);
+		emLbl02.setVisible(false);
+		emtf01.setVisible(false);
+		emta01.setVisible(false);
+		emMBtn.setVisible(false);
+		
+//		aplTable.setVisible(false);
+//		aplSPane.setVisible(false);
+		aplBBtn.setVisible(false);
+		aplDBtn.setVisible(false);
+		
+//		rapTable.setVisible(false);
+//		rapSPane.setVisible(false);
+		rapBBtn.setVisible(false);
+		rapRBtn.setVisible(false);
+		rapDBtn.setVisible(false);
+		
+		apALbl01.setVisible(false);
+		apALbl02.setVisible(false);
+		apALbl03.setVisible(false);
+		apALbl04.setVisible(false);
+		apALbl05.setVisible(false);
+		apALbl06.setVisible(false);
+		apALbl07.setVisible(false);
+		
+		adapABtn.setVisible(false);
+		adapBBtn.setVisible(false);
+		
+		adaptf01.setVisible(false);
+		adaptf02.setVisible(false);
+		adaptf03.setVisible(false);
+		adaptf04.setVisible(false);
+		adaptf05.setVisible(false);
+		
+		gcb.setVisible(false);
+		tcb.setVisible(false);
+		
+		model = (DefaultTableModel) dtable.getModel();
+		model.setRowCount(0);
+		
+		
+		apMLbl01.setVisible(true);
+		apMLbl02.setVisible(true);
+		apMLbl03.setVisible(true);
+		
+		dTLbl.setVisible(true);
+		dpnl01.setVisible(true);
+		dpnl02.setVisible(true);
+		dpnl03.setVisible(true);
+		
+		dLbl01.setVisible(false);
+		
+		dLbl02.setVisible(false);
+		dLbl03.setVisible(false);
+		dLbl04.setVisible(false);
+		dLbl05.setVisible(false);
+		
+		dlDBtn.setVisible(false);
+		dlBBtn.setVisible(false);
+		
+		jtpane.setVisible(false);
+		
+		adtf01.setVisible(false);
+		adtf02.setVisible(false);
+		adtf03.setVisible(false);
+		adtf04.setVisible(false);
+		adtf05.setVisible(false);
+		
+		adLbl01.setVisible(false);
+		adLbl02.setVisible(false);
+		adLbl03.setVisible(false);
+		adLbl04.setVisible(false);
+		adLbl05.setVisible(false);
+		
+		adBtn.setVisible(false);
+		adBBtn.setVisible(false);
 		
 		rdtf01.setVisible(false);
 		rdtf02.setVisible(false);
@@ -1255,97 +2792,176 @@ public class AdminMain implements ActionListener, MouseListener{
 		eptf05.setVisible(false);
 		sBtn.setVisible(false);
 		bBtn.setVisible(false);
-		
 	}
 	
-	public void AddDoctorSection() {
+	
+	public void addAppointmentSection() {
+		
+		apALbl01.setVisible(true);
+		apALbl02.setVisible(true);
+		apALbl03.setVisible(true);
+		apALbl04.setVisible(true);
+		apALbl05.setVisible(true);
+		apALbl06.setVisible(true);
+		apALbl07.setVisible(true);
+		
+		adapABtn.setVisible(true);
+		adapBBtn.setVisible(true);
+		
+		adaptf01.setVisible(true);
+		adaptf02.setVisible(true);
+		adaptf03.setVisible(true);
+		adaptf04.setVisible(true);
+		adaptf05.setVisible(true);
+		
+		gcb.setVisible(true);
+		tcb.setVisible(true);
+		
+		apMLbl01.setVisible(false);
+		apMLbl02.setVisible(false);
+		apMLbl03.setVisible(false);
 		dpnl03.setVisible(false);
 		
-		dLbl01.setVisible(false);
-		dLbl02.setVisible(false);
-		dLbl03.setVisible(false);
-		dLbl04.setVisible(false);
-		dLbl05.setVisible(false);
 		
-		adtf01.setVisible(true);
-		adtf02.setVisible(true);
-		adtf03.setVisible(true);
-		adtf04.setVisible(true);
-		adtf05.setVisible(true);
-		
-		adLbl01.setVisible(true);
-		adLbl02.setVisible(true);
-		adLbl03.setVisible(true);
-		adLbl04.setVisible(true);
-		adLbl05.setVisible(true);
-		
-		adBtn.setVisible(true);
-		adBBtn.setVisible(true);
 	}
 	
-	public void addDoctortoDB() {
+	
+	
+	public void addAppointToDB() {
 		
-		String docName = adtf02.getText();
-		String Field = adtf03.getText();
-		String email = adtf04.getText();
-		String BMDCID = adtf01.getText();
-		String phone = adtf05.getText();
+		String p_name = adaptf01.getText();
+		String age = adaptf02.getText();
+		String gender = (String) gcb.getSelectedItem();
+		String app_date = adaptf03.getText();
+		String app_time = (String) tcb.getSelectedItem();
+		String doct_name = adaptf04.getText();
+		String phone = adaptf05.getText();
+		
+		String nameRegex = "^[A-Za-z ]{1,100}$";
+		String phoneRegex = "^(\\+88)?01[2-9]\\d{8}$";
+		String ageRegex = "^[0-9]{1,3}$";
+		String dateRegex = "^([0-9]{1,2}) (January|February|March|April|May|June|July|August|September|October|November|December) ([0-9]{2,4})$";
+		
+		Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
+		
+		adaptf01.setBorder(null);
+		adaptf02.setBorder(null);
+		adaptf03.setBorder(null);
+		adaptf04.setBorder(null);
+		adaptf05.setBorder(null);
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
 		
 		
-		if(adtf01.getText().length() == 0) {
-			JOptionPane.showMessageDialog(null, "Enter BMDC ID","Warning",JOptionPane.WARNING_MESSAGE);
+		if(adaptf01.getText().length() == 0) {
 			
-		}else if(adtf02.getText().length() == 0) {
-			JOptionPane.showMessageDialog(null, "Enter Name","Warning",JOptionPane.WARNING_MESSAGE);
+			errLbl01.setVisible(true);
+			adaptf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("enter name");
+			errLbl01.setBounds(308,211,150,40);
 			
-		}else if(adtf03.getText().length() == 0) {
-			JOptionPane.showMessageDialog(null, "Enter Field","Warning",JOptionPane.WARNING_MESSAGE);
+		}else if(adaptf01.getText().length() >0 && !Pattern.matches(nameRegex, p_name)) {
 			
-		}else if(adtf04.getText().length() == 0) {
-			JOptionPane.showMessageDialog(null, "Enter email","Warning",JOptionPane.WARNING_MESSAGE);
+			errLbl01.setVisible(true);
+			adaptf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("invalid name");
+			errLbl01.setBounds(308,211,150,40);
 			
-		}else if(adtf05.getText().length() == 0) {
-			JOptionPane.showMessageDialog(null, "Enter Phone","Warning",JOptionPane.WARNING_MESSAGE);
+		}else if(adaptf02.getText().length() == 0) {
+			
+			errLbl02.setVisible(true);
+			adaptf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("enter age");
+			errLbl02.setBounds(562,211,150,40);
+			
+		}else if(adaptf02.getText().length() >0 && !Pattern.matches(ageRegex, age)) {
+			
+			errLbl02.setVisible(true);
+			adaptf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("invalid age");
+			errLbl02.setBounds(562,211,150,40);
+			
+		}else if(adaptf03.getText().length() == 0) {
+			
+			errLbl03.setVisible(true);
+			adaptf03.setBorder(inpuErrorBorder);
+			errLbl03.setText("enter appointment date");
+			errLbl03.setBounds(308,297,250,40);
+			
+		}else if(adaptf03.getText().length() >0 && !Pattern.matches(dateRegex, app_date)) {
+			
+			errLbl03.setVisible(true);
+			adaptf03.setBorder(inpuErrorBorder);
+			errLbl03.setText("ex:01 January 2024");
+			errLbl03.setBounds(308,297,150,40);
+			
+		}else if(adaptf04.getText().length() == 0) {
+			
+			errLbl04.setVisible(true);
+			adaptf04.setBorder(inpuErrorBorder);
+			errLbl04.setText("enter doctor name");
+			errLbl04.setBounds(308,384,250,40);
+			
+		}else if(adaptf04.getText().length() >0 && !Pattern.matches(nameRegex, doct_name)) {
+			
+			errLbl04.setVisible(true);
+			adaptf04.setBorder(inpuErrorBorder);
+			errLbl04.setText("enter a valid name");
+			errLbl04.setBounds(308,384,150,40);
+			
+		}else if(adaptf05.getText().length() == 0) {
+			
+			errLbl05.setVisible(true);
+			adaptf05.setBorder(inpuErrorBorder);
+			errLbl05.setText("enter phone number");
+			errLbl05.setBounds(308,476,250,40);
+			
+		}else if(adaptf05.getText().length() >0 && !Pattern.matches(phoneRegex, phone)) {
+			
+			errLbl05.setVisible(true);
+			adaptf05.setBorder(inpuErrorBorder);
+			errLbl05.setText("enter a valid name");
+			errLbl05.setBounds(308,476,150,40);
 			
 		}else {
 			String url = "jdbc:mysql://localhost:4206/dam";
+			
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
 				Connection con = DriverManager.getConnection(url, "dam", "");
 				
 				Statement st = con.createStatement();
 				
-				ResultSet rss = st.executeQuery("select `email`,`phone` from `doctor`");
+				ResultSet rss = st.executeQuery("select `p_name`,`phone` from `appoinments`");
+				
 				boolean duplicacy = false;
 				
 				while(rss.next()) {
-					if(rss.getString(1).equals(email) || rss.getString(2).equals(phone)) {
+					if(rss.getString(1).equals(p_name) && rss.getString(2).equals(phone)) {
 						duplicacy = true;
 					}
+					
 				}
+				int rs = 0;
 				
 				if(duplicacy != true) {
-					int rs = st.executeUpdate("INSERT INTO `doctor`(`bmdc_id`, `doc_name`, `field`, `email`, `phone`) VALUES ('"+BMDCID+"','"+docName+"','"+Field+"','"+email+"','"+phone+"')");
+					rs = st.executeUpdate("INSERT INTO `appoinments`(`p_name`, `age`, `Gender`, `app_date`, `app_time`, `doct_name`, `phone`) VALUES ('"+p_name+"','"+age+"','"+gender+"','"+app_date+"','"+app_time+"','"+doct_name+"','"+phone+"')");
+				}
+				
+				if(rs > 0) {
 					
-					if(rs > 0) {
-						adtf01.setText(null);
-						adtf02.setText(null);
-						adtf03.setText(null);
-						adtf04.setText(null);
-						adtf05.setText(null);
-						adtf01.requestFocus();
-						
-					}else {
-						System.out.println("Not Inserted");
-					}
+					adaptf01.setText(null);
+					adaptf02.setText(null);
+					adaptf03.setText(null);
+					adaptf04.setText(null);
+					adaptf05.setText(null);
+					adaptf01.requestFocus();
+					
 				}else {
-					JOptionPane.showMessageDialog(null, "Already registered","Warning",JOptionPane.WARNING_MESSAGE);
-					adtf01.setText(null);
-					adtf02.setText(null);
-					adtf03.setText(null);
-					adtf04.setText(null);
-					adtf05.setText(null);
-					adtf01.requestFocus();
+					System.out.println("Not Inserted");
 				}
 				st.close();
 				con.close();
@@ -1357,52 +2973,60 @@ public class AdminMain implements ActionListener, MouseListener{
 		}
 	}
 	
-	public void RemoveDoctorSection() {
+	public void removeAppointSection() {
 		
+//		rapTable.setVisible(true);
+//		rapSPane.setVisible(true);
+		dtable.setVisible(true);
+		jtpane.setVisible(true);
+		rapBBtn.setVisible(true);
+		rapRBtn.setVisible(true);
+		rapDBtn.setVisible(true);
+		
+		apMLbl01.setVisible(false);
+		apMLbl02.setVisible(false);
+		apMLbl03.setVisible(false);
 		dpnl03.setVisible(false);
-		
-		dLbl01.setVisible(false);
-		
-		dLbl02.setVisible(false);
-		dLbl03.setVisible(false);
-		dLbl04.setVisible(false);
-		dLbl05.setVisible(false);
-		
-		rdtf01.setVisible(true);
-		rdtf02.setVisible(true);
-		rdtf03.setVisible(true);
-		rdtf04.setVisible(true);
-		
-		rdLbl01.setVisible(true);
-		rdLbl02.setVisible(true);
-		rdLbl03.setVisible(true);
-		rdLbl04.setVisible(true);    
-		
-		rdRBtn.setVisible(true);
-		rdBBtn.setVisible(true);
 	}
 	
-	public void RemoveDocFromDB() {
+	
+	public void displayAppointList() {
+		
+		model = (DefaultTableModel) dtable.getModel();
+		model.setRowCount(0);
+		
 		String url = "jdbc:mysql://localhost:4206/dam";
-		String BMDCID = rdtf01.getText();
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection con = DriverManager.getConnection(url, "dam", "");
 			
 			Statement st = con.createStatement();
 			
-			int rs = st.executeUpdate("DELETE FROM `doctor` WHERE bmdc_id = '"+BMDCID+"'");
+			ResultSet rs = st.executeQuery("SELECT `p_name`, `age`, `Gender`, `app_date`, `app_time`,`doct_name`,`phone` FROM `appoinments`");
+			ResultSetMetaData rsmd = rs.getMetaData();
+			model = (DefaultTableModel) dtable.getModel();
 			
-			if(rs > 0) {
-				JOptionPane.showMessageDialog(null, "Doctor Removed","Warning",JOptionPane.WARNING_MESSAGE);
-			}else {
-				JOptionPane.showMessageDialog(null, "Something went wrong","Warning",JOptionPane.WARNING_MESSAGE);
+			int col = rsmd.getColumnCount();
+			String[] colName = new String[col];
+			
+			for(int i = 0; i < col; i++) 
+				colName[i] = rsmd.getColumnName(i+1);
+			model.setColumnIdentifiers(colName);
+			
+			String pName,age, gender, appDate, appTime, doctName, phone;
+			
+			while(rs.next()) {
+				
+				pName = rs.getString(1);
+				age = String.valueOf(rs.getInt(2));
+				gender = rs.getString(3);
+				appDate = rs.getString(4);
+				appTime = rs.getString(5);
+				doctName = rs.getString(6);
+				phone = rs.getString(7);
+				String[] row = {pName,age,gender,appDate,appTime,doctName,phone};
+				model.addRow(row);
 			}
-			
-			rdtf01.setText(null);
-			rdtf02.setText(null);
-			rdtf03.setText(null);
-			rdtf04.setText(null);
 			
 			st.close();
 			con.close();
@@ -1413,8 +3037,252 @@ public class AdminMain implements ActionListener, MouseListener{
 		}
 	}
 	
-	public void UpdateDoctorSection1() {
+	
+	public void removeAppointmentfromDB() {
+		String url = "jdbc:mysql://localhost:4206/dam";
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection(url, "dam", "");
+			
+			Statement st = con.createStatement();
+			
+			DefaultTableModel model = (DefaultTableModel) rapTable.getModel();
+			String pName = null,phone = null;
+			
+			if(rapTable.getSelectedRowCount() == 1) {
+				int row = rapTable.getSelectedRow();
+				pName = model.getValueAt(row, 0).toString();
+				phone = model.getValueAt(row, 6).toString();
+			}else {
+				if(rapTable.getSelectedRowCount() == 0) {
+					JOptionPane.showMessageDialog(null, "Table is Empty","Warning",JOptionPane.WARNING_MESSAGE);
+				}else {
+					JOptionPane.showMessageDialog(null, "Select any single row","Warning",JOptionPane.WARNING_MESSAGE);
+				}
+			}
+			
+			if(pName != null && phone != null) {
+				int rs = st.executeUpdate("DELETE FROM `appoinments` WHERE `p_name` = '"+pName+"' AND `phone` = '"+phone+"'");
+				
+				if(rs>0) {
+					JOptionPane.showMessageDialog(null, "Appoinment Removed","Warning",JOptionPane.WARNING_MESSAGE);
+				}else {
+					JOptionPane.showMessageDialog(null, "Something went wrong","Warning",JOptionPane.WARNING_MESSAGE);
+				}
+			}
+			
+			st.close();
+			con.close();
+			
+		} catch (ClassNotFoundException | SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	public void AppointmentListSection() {
 		
+//		aplTable.setVisible(true);
+//		aplSPane.setVisible(true);
+		dtable.setVisible(true);
+		jtpane.setVisible(true);
+		aplBBtn.setVisible(true);
+		aplDBtn.setVisible(true);
+		
+		apMLbl01.setVisible(false);
+		apMLbl02.setVisible(false);
+		apMLbl03.setVisible(false);
+		dpnl03.setVisible(false);
+	}
+	
+	public void displayAppointmentList2() {
+		if(model.getRowCount() == 0) {
+		String url = "jdbc:mysql://localhost:4206/dam";
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection(url, "dam", "");
+			
+			Statement st = con.createStatement();
+			
+			ResultSet rs = st.executeQuery("SELECT `p_name`, `age`, `Gender`, `app_date`, `app_time`,`doct_name`,`phone` FROM `appoinments`");
+			ResultSetMetaData rsmd = rs.getMetaData();
+			model = (DefaultTableModel) dtable.getModel();
+			
+			int col = rsmd.getColumnCount();
+			String[] colName = new String[col];
+			
+			for(int i = 0; i < col; i++) 
+				colName[i] = rsmd.getColumnName(i+1);
+			model.setColumnIdentifiers(colName);
+			
+			String pName,age, gender, appDate, appTime, doctName, phone;
+			
+			while(rs.next()) {
+				
+				pName = rs.getString(1);
+				age = String.valueOf(rs.getInt(2));
+				gender = rs.getString(3);
+				appDate = rs.getString(4);
+				appTime = rs.getString(5);
+				doctName = rs.getString(6);
+				phone = rs.getString(7);
+				String[] row = {pName,age,gender,appDate,appTime,doctName,phone};
+				model.addRow(row);
+			}
+			
+			st.close();
+			con.close();
+			
+		} catch (ClassNotFoundException | SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		}
+	}
+	
+	
+	
+	public void EmergencySection() {
+		try {
+			font01 = Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Regular.ttf"));
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Regular.ttf")));
+			
+			font02 = Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Bold.ttf"));
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Bold.ttf")));
+			
+			font03 = Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Lightitalic.ttf"));
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-Lightitalic.ttf")));
+			
+			font04 = Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-SemiBoldItalic.ttf"));
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("Raleway-SemiBoldItalic.ttf")));
+		} catch(IOException | FontFormatException e) {
+		}
+		
+		Font activeBtnFont = font02.deriveFont(20f);
+		Font normalLabel = font02.deriveFont(16f);
+		Font titleNameFont = font02.deriveFont(32f);
+		Font btnFont = font02.deriveFont(12f);
+		Font rglrFont = font01.deriveFont(15f);
+		Font textFieldFont = font01.deriveFont(14f);
+		
+		adaptf01.setBorder(null);
+		adaptf02.setBorder(null);
+		adaptf03.setBorder(null);
+		adaptf04.setBorder(null);
+		adaptf05.setBorder(null);
+		adaptf01.setText(null);
+		adaptf02.setText(null);
+		adaptf03.setText(null);
+		adaptf04.setText(null);
+		adaptf05.setText(null);
+		
+		emtf01.setBorder(null);
+		emta01.setBorder(null);
+		
+		mLbl04.setFont(activeBtnFont);
+		mLbl04.setBounds(74, 290, 150, 40);
+		mLbl03.setFont(normalLabel);
+		mLbl03.setBounds(54, 237, 150, 40);
+		mLbl02.setBounds(54, 184, 80, 40);
+		mLbl02.setFont(normalLabel);
+		aPanel.setBounds(0,301,60,22);
+		mLbl01.setBounds(54, 133, 80, 40);
+		mLbl01.setFont(normalLabel);
+		
+		dTLbl.setText("Emergency");
+		dTLbl.setBounds(193, 10, 700, 120);
+		
+		emLbl01.setVisible(true);
+		emLbl02.setVisible(true);
+		emtf01.setVisible(true);
+		emta01.setVisible(true);
+		emMBtn.setVisible(true);
+		
+		sptf01.setText(null);
+		sptf02.setText(null);
+		
+		udtf01.setText(null);
+		udtf02.setText(null);
+		udtf03.setText(null);
+		udtf04.setText(null);
+		udtf05.setText(null);
+		
+		udtf01.setBorder(null);
+		udtf02.setBorder(null);
+		udtf03.setBorder(null);
+		udtf04.setBorder(null);
+		udtf05.setBorder(null);
+		
+		
+		rdtf01.setText(null);
+		rdtf02.setText(null);
+		rdtf03.setText(null);
+		rdtf04.setText(null);
+		rdtf01.requestFocus();
+		
+		rdtf01.setBorder(null);
+		rdtf02.setBorder(null);
+		rdtf03.setBorder(null);
+		rdtf04.setBorder(null);
+		
+		adtf01.setText(null);
+		adtf02.setText(null);
+		adtf03.setText(null);
+		adtf04.setText(null);
+		adtf05.setText(null);
+		adtf01.requestFocus();
+		
+		adtf01.setBorder(null);
+		adtf02.setBorder(null);
+		adtf03.setBorder(null);
+		adtf04.setBorder(null);
+		adtf05.setBorder(null);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
+		
+		aplBBtn.setVisible(false);
+		aplDBtn.setVisible(false);
+		
+		rapBBtn.setVisible(false);
+		rapRBtn.setVisible(false);
+		rapDBtn.setVisible(false);
+		
+		apALbl01.setVisible(false);
+		apALbl02.setVisible(false);
+		apALbl03.setVisible(false);
+		apALbl04.setVisible(false);
+		apALbl05.setVisible(false);
+		apALbl06.setVisible(false);
+		apALbl07.setVisible(false);
+		
+		adapABtn.setVisible(false);
+		adapBBtn.setVisible(false);
+		
+		adaptf01.setVisible(false);
+		adaptf02.setVisible(false);
+		adaptf03.setVisible(false);
+		adaptf04.setVisible(false);
+		adaptf05.setVisible(false);
+		
+		gcb.setVisible(false);
+		tcb.setVisible(false);
+		
+		model = (DefaultTableModel) dtable.getModel();
+		model.setRowCount(0);
+		
+		
+		apMLbl01.setVisible(false);
+		apMLbl02.setVisible(false);
+		apMLbl03.setVisible(false);
+		
+		dTLbl.setVisible(true);
+		dpnl01.setVisible(true);
+		dpnl02.setVisible(true);
 		dpnl03.setVisible(false);
 		
 		dLbl01.setVisible(false);
@@ -1424,31 +3292,39 @@ public class AdminMain implements ActionListener, MouseListener{
 		dLbl04.setVisible(false);
 		dLbl05.setVisible(false);
 		
-		ud01tf02.setVisible(true);
-		ud01tf01.setVisible(true);
-		ud01Lbl02.setVisible(true);
-		ud01Lbl01.setVisible(true);
-		udBBtn.setVisible(true);
-		udNBtn.setVisible(true);
-	}
-	
-	public void UpdateDoctorSection2() {
+		dlDBtn.setVisible(false);
+		dlBBtn.setVisible(false);
 		
+		jtpane.setVisible(false);
 		
-		udtf01.setVisible(true);
-		udtf02.setVisible(true);
-		udtf03.setVisible(true);
-		udtf04.setVisible(true);
-		udtf05.setVisible(true);
+		adtf01.setVisible(false);
+		adtf02.setVisible(false);
+		adtf03.setVisible(false);
+		adtf04.setVisible(false);
+		adtf05.setVisible(false);
 		
-		udLbl01.setVisible(true);
-		udLbl02.setVisible(true);
-		udLbl03.setVisible(true);
-		udLbl04.setVisible(true);
-		udLbl05.setVisible(true);
+		adLbl01.setVisible(false);
+		adLbl02.setVisible(false);
+		adLbl03.setVisible(false);
+		adLbl04.setVisible(false);
+		adLbl05.setVisible(false);
 		
-		uddBBtn.setVisible(true);
-		udBtn.setVisible(true);
+		adBtn.setVisible(false);
+		adBBtn.setVisible(false);
+		
+		rdtf01.setVisible(false);
+		rdtf02.setVisible(false);
+		rdtf03.setVisible(false);
+		rdtf04.setVisible(false);
+		
+		rdLbl01.setVisible(false);
+		rdLbl02.setVisible(false);
+		rdLbl03.setVisible(false);
+		rdLbl04.setVisible(false);    
+		
+		rdRBtn.setVisible(false);
+		rdBBtn.setVisible(false);
+		
 		
 		ud01tf02.setVisible(false);
 		ud01tf01.setVisible(false);
@@ -1456,60 +3332,362 @@ public class AdminMain implements ActionListener, MouseListener{
 		ud01Lbl01.setVisible(false);
 		udBBtn.setVisible(false);
 		udNBtn.setVisible(false);
+		
+		
+		udtf01.setVisible(false);
+		udtf02.setVisible(false);
+		udtf03.setVisible(false);
+		udtf04.setVisible(false);
+		udtf05.setVisible(false);
+		
+		udLbl01.setVisible(false);
+		udLbl02.setVisible(false);
+		udLbl03.setVisible(false);
+		udLbl04.setVisible(false);
+		udLbl05.setVisible(false);
+		
+		uddBBtn.setVisible(false);
+		udBtn.setVisible(false);
+		
+		spLbl01.setVisible(false);
+		spLbl02.setVisible(false);
+		sptf01.setVisible(false);
+		sptf02.setVisible(false);
+		spCBtn.setVisible(false);
+		spBBtn.setVisible(false);
+		
+		
+		ilbl01.setVisible(false);
+		ilbl02.setVisible(false);
+		ilbl03.setVisible(false);
+		ilbl04.setVisible(false);
+		ilbl05.setVisible(false);
+		
+		lbl01.setVisible(false);
+		lbl02.setVisible(false);
+		lbl03.setVisible(false);
+		lbl04.setVisible(false);
+		lbl05.setVisible(false);
+		
+		logoutBtn.setVisible(false);
+		editProfBtn.setVisible(false);
+		titleName.setVisible(false);
+		title.setVisible(false);
+		display.setVisible(false);
+		
+		eptf01.setVisible(false);
+		eptf02.setVisible(false);
+		eptf03.setVisible(false);
+		eptf04.setVisible(false);
+		eptf05.setVisible(false);
+		sBtn.setVisible(false);
+		bBtn.setVisible(false);
 	}
 	
-	public void SetPassSection() {
-		
-		dpnl03.setVisible(false);
-		
-		dLbl01.setVisible(false);
-		
-		dLbl02.setVisible(false);
-		dLbl03.setVisible(false);
-		dLbl04.setVisible(false);
-		dLbl05.setVisible(false);
-		
-		spLbl01.setVisible(true);
-		spLbl02.setVisible(true);
-		sptf01.setVisible(true);
-		sptf02.setVisible(true);
-		spCBtn.setVisible(true);
-		spBBtn.setVisible(true);
-	}
 	
-	public void UpdatePasscode() {
-		String url = "jdbc:mysql://localhost:4206/dam";
-		String PrePass = sptf01.getText();
-		String NewPass = sptf02.getText();
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			Connection con = DriverManager.getConnection(url, "dam", "");
+	public void senmailToDoctor() {
+		String toDoc = emtf01.getText();
+		String Case = emta01.getText();
+		
+		String emailRegex = "^[a-z0-9]+@[a-z]+(\\.[a-z]+)+$";
+		
+		Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		emtf01.setBorder(null);
+		emta01.setBorder(null);
+		
+		if(emtf01.getText().length() == 0) {
 			
-			Statement st = con.createStatement();
+			errLbl01.setVisible(true);
+			emtf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("enter email");
+			errLbl01.setBounds(308,271,150,40);
 			
-			int rs = st.executeUpdate("UPDATE `doctor` SET `passcode`='"+NewPass+"' WHERE passcode = '"+PrePass+"'");
+		}else if(emtf01.getText().length() > 0 && !Pattern.matches(emailRegex, toDoc)) {
 			
-			if(rs > 0) {
-				JOptionPane.showMessageDialog(null, "Passcode Updated","Warning",JOptionPane.WARNING_MESSAGE);
-			}else {
-				JOptionPane.showMessageDialog(null, "Something went wrong","Warning",JOptionPane.WARNING_MESSAGE);
-			}
+			errLbl01.setVisible(true);
+			emtf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("invalid email");
+			errLbl01.setBounds(308,271,150,40);
 			
-			sptf01.setText(null);
-			sptf02.setText(null);
-			DoctorSection();
+		}else if(emta01.getText().length() == 0) {
 			
-			st.close();
-			con.close();
+			errLbl01.setVisible(true);
+			emta01.setBorder(inpuErrorBorder);
+			errLbl01.setText("write something");
+			errLbl01.setBounds(308,449,150,40);
 			
-		} catch (ClassNotFoundException | SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		}else {
+		
+			try {
+				SendEmail mail = new SendEmail();
+				mail.setEmailAndMsg(toDoc, Case);
+				mail.setupServerProperties();
+				mail.draftEmail();
+				mail.sendEmail();
+			} catch (AddressException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MessagingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			};
+			
+			JOptionPane.showMessageDialog(null, "Email sent successfully","Message",JOptionPane.INFORMATION_MESSAGE);
+			
+			emtf01.setText(null);
+			emta01.setText(null);
+			emtf01.requestFocus();
+			
 		}
 	}
 	
+	public void updateDoctorNextAction() {
+		String bID = ud01tf01.getText();
+		String field = ud01tf02.getText();
+		int did = 0;
+		
+		String nameRegex = "^[A-Za-z ]{1,200}$";
+		String idRegex = "^[A-Z]{2}[0-9]{4}$";
+		
+		Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
+		
+		ud01tf01.setBorder(null);
+		ud01tf02.setBorder(null);
+		
+		if(ud01tf01.getText().length() == 0) {
+			
+			errLbl01.setVisible(true);
+			ud01tf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("enter BMDC ID");
+			errLbl01.setBounds(427, 300, 120, 40);
+			
+		}else if(ud01tf01.getText().length() > 0 && !Pattern.matches(idRegex, bID)) {
+			
+			errLbl01.setVisible(true);
+			ud01tf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("invalid BMDC ID");
+			errLbl01.setBounds(427, 300, 120, 40);
+			
+		}else if(ud01tf02.getText().length() == 0) {
+			
+			errLbl02.setVisible(true);
+			ud01tf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("enter field");
+			errLbl02.setBounds(427, 390, 120, 40);
+			
+		}else if(ud01tf02.getText().length() > 0 && !Pattern.matches(nameRegex, field)) {
+			
+			errLbl02.setVisible(true);
+			ud01tf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("invalid field");
+			errLbl02.setBounds(427, 390, 120, 40);
+			
+		}else {
+			
+			String url = "jdbc:mysql://localhost:4206/dam";
+			try {
+				Class.forName("com.mysql.cj.jdbc.Driver");
+				Connection con = DriverManager.getConnection(url, "dam", "");
+				
+				Statement st = con.createStatement();
+				
+				ResultSet rss = st.executeQuery("select `doctor_id`, `bmdc_id`,`field` from `doctor`");
+				boolean CorrectE = false;
+				boolean CorrectP = false;
+				
+				while(rss.next()) {
+					if(rss.getString(2).equals(bID)) {
+						CorrectE = true;
+						
+						if(rss.getString(3).equals(field)) {
+							did = rss.getInt(1);
+							CorrectP = true;
+						}
+					}
+				}
+				
+				if(CorrectE == true && CorrectP == true) {
+					
+					UpdateDoctorSection2(did);
+					
+				}else {
+					if(CorrectE != true) {
+						errLbl01.setText("incorrect BMDC ID");
+						errLbl01.setBounds(427, 300, 120, 40);
+						ud01tf01.setBorder(inpuErrorBorder);
+						errLbl01.setVisible(true);
+					}
+					
+					if(CorrectP != true) {
+						errLbl02.setText("incorrect field");
+						errLbl02.setBounds(427, 390, 120, 40);
+						ud01tf02.setBorder(inpuErrorBorder);
+						errLbl02.setVisible(true);
+					}
+				}
+				st.close();
+				con.close();
+				
+			} catch (ClassNotFoundException | SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+				
+			
+		}
+		
+	}
+	
+	public void updateDoctorToDB(int doc_id) {
+		
+		String bmdcid = udtf01.getText();
+		String Dname = udtf02.getText();
+		String field = udtf03.getText();
+		String email = udtf04.getText();
+		String phone = udtf05.getText();
+		
+		String nameRegex = "^[A-Z]{1}[a-z]{1,100}$";
+		String emailRegex = "^[a-z0-9]+@[a-z]+(\\.[a-z]+)+$";
+		String phoneRegex = "^(\\+88)?01[2-9]\\d{8}$";
+		String addRegex = "^[A-Za-z0-9]{1,200}$";
+		String idRegex = "^[A-Z]{2}[0-9]{4}$";
+		
+		Border inpuErrorBorder = BorderFactory.createLineBorder(red, 2);
+		
+		errLbl01.setVisible(false);
+		errLbl02.setVisible(false);
+		errLbl03.setVisible(false);
+		errLbl04.setVisible(false);
+		errLbl05.setVisible(false);
+		
+		udtf01.setBorder(null);
+		udtf02.setBorder(null);
+		udtf03.setBorder(null);
+		udtf04.setBorder(null);
+		udtf05.setBorder(null);
+		
+		if(udtf01.getText().length() == 0) {
+			
+			errLbl01.setVisible(true);
+			udtf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("enter BMDC ID");
+			errLbl01.setBounds(311, 216, 200, 40);
+			
+		}else if(udtf01.getText().length() > 0 && !Pattern.matches(idRegex, bmdcid)) {
+			
+			errLbl01.setVisible(true);
+			udtf01.setBorder(inpuErrorBorder);
+			errLbl01.setText("invalid BMDC ID");
+			errLbl01.setBounds(311, 216, 200, 40);
+			
+		}else if(udtf02.getText().length() == 0) {
+			
+			errLbl02.setVisible(true);
+			udtf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("enter name");
+			errLbl02.setBounds(510, 216, 150, 40);
+			
+		}else if(udtf02.getText().length() > 0 && !Pattern.matches(nameRegex, Dname)) {
+			
+			errLbl02.setVisible(true);
+			udtf02.setBorder(inpuErrorBorder);
+			errLbl02.setText("invalid name");
+			errLbl02.setBounds(510, 216, 150, 40);
+			
+		}else if(udtf03.getText().length() == 0) {
+			
+			errLbl03.setVisible(true);
+			udtf03.setBorder(inpuErrorBorder);
+			errLbl03.setText("enter field");
+			errLbl03.setBounds(311, 302, 150, 40);
+			
+		}else if(udtf03.getText().length() > 0 && !Pattern.matches(nameRegex, field)) {
+			
+			errLbl03.setVisible(true);
+			udtf03.setBorder(inpuErrorBorder);
+			errLbl03.setText("invalid field");
+			errLbl03.setBounds(311, 302, 150, 40);
+			
+		}else if(udtf04.getText().length() == 0) {
+			
+			errLbl04.setVisible(true);
+			udtf04.setBorder(inpuErrorBorder);
+			errLbl04.setText("enter email");
+			errLbl04.setBounds(311, 388, 120, 40);
+			
+		}else if(udtf04.getText().length() > 0 && !Pattern.matches(emailRegex, email)) {
+			
+			errLbl04.setVisible(true);
+			udtf04.setBorder(inpuErrorBorder);
+			errLbl04.setText("invalid email");
+			errLbl04.setBounds(311, 388, 120, 40);
+			
+		}else if(udtf05.getText().length() == 0) {
+			
+			errLbl05.setVisible(true);
+			udtf05.setBorder(inpuErrorBorder);
+			errLbl05.setText("enter phone");
+			errLbl05.setBounds(311, 474, 150, 40);
+			
+		}else if(udtf05.getText().length() > 0 && !Pattern.matches(phoneRegex, phone)) {
+			
+			errLbl05.setVisible(true);
+			udtf05.setBorder(inpuErrorBorder);
+			errLbl05.setText("invalid phone");
+			errLbl05.setBounds(311, 474, 150, 40);
+			
+		}else {
+		
+			String url = "jdbc:mysql://localhost:4206/dam";
+			try {
+				Class.forName("com.mysql.cj.jdbc.Driver");
+				Connection con = DriverManager.getConnection(url, "dam", "");
+				
+				Statement st = con.createStatement();
+				
+				
+				int rsss = st.executeUpdate("UPDATE `doctor` SET `bmdc_id`='"+bmdcid+"',`doc_name`='"+Dname+"',`field`='"+field+"',`email`='"+email+"',`phone`='"+phone+"' WHERE `doctor_id` = '"+doc_id+"'");
+				
+				if(rsss > 0) {
+					
+					JOptionPane.showMessageDialog(null, "Doctor information updated","message",JOptionPane.INFORMATION_MESSAGE);
+					udtf01.setText(null);
+					udtf02.setText(null);
+					udtf03.setText(null);
+					udtf04.setText(null);
+					udtf05.setText(null);
+					udtf01.requestFocus();
+				
+				}else {
+					System.out.println("something went wrong");
+				}
+				
+				
+				st.close();
+				con.close();
+				
+			} catch (ClassNotFoundException | SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+//	action
 	@Override
-	public void actionPerformed(ActionEvent e) {
+   	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getSource() == editProfBtn) {
 			editProfileSection(userID);
@@ -1556,13 +3734,59 @@ public class AdminMain implements ActionListener, MouseListener{
 			DoctorSection();
 		}
 		
+		if(e.getSource() == dlBBtn) {
+			DoctorSection();
+		}
+		
 		if(e.getSource() == udNBtn) {
-			UpdateDoctorSection2();
+			
+			updateDoctorNextAction();
 		}
 		
 		if(e.getSource() == spCBtn) {
 			UpdatePasscode();
 		}
+		
+		if(e.getSource() == dlDBtn) {
+			displayList();
+		}
+		
+		if(e.getSource() == adapBBtn) {
+			AppoinmentSection();
+		}
+		
+		if(e.getSource() == adapABtn) {
+			addAppointToDB();
+		}
+		
+		if(e.getSource() == rapDBtn) {
+			displayAppointList();
+		}
+		
+		if(e.getSource() == rapBBtn) {
+			AppoinmentSection();
+		}
+		
+		if(e.getSource() == rapRBtn) {
+			removeAppointmentfromDB();
+		}
+		
+		if(e.getSource() == aplDBtn) {
+			displayAppointmentList2();
+		}
+		
+		if(e.getSource() == aplBBtn) {
+			AppoinmentSection();
+		}
+		
+		if(e.getSource() == emMBtn) {
+			senmailToDoctor();
+		}
+		
+		if(e.getSource() == udBtn) {
+			updateDoctorToDB(updocID);
+		}
+		
 	}
 
 	@Override
@@ -1574,6 +3798,10 @@ public class AdminMain implements ActionListener, MouseListener{
 		
 		if(e.getSource() == mLbl02) {
 			DoctorSection();
+		}
+		
+		if(e.getSource() == mLbl03) {
+			AppoinmentSection();
 		}
 		
 		if(e.getSource() == dLbl01) {
@@ -1590,6 +3818,25 @@ public class AdminMain implements ActionListener, MouseListener{
 		
 		if(e.getSource() == dLbl05) {
 			SetPassSection();
+		}
+		if(e.getSource() == dLbl04) {
+			doctorList();
+		}
+		
+		if(e.getSource() == apMLbl01) {
+			addAppointmentSection();
+		}
+		
+		if(e.getSource() == apMLbl02) {
+			removeAppointSection();
+		}
+		
+		if(e.getSource() == apMLbl03) {
+			AppointmentListSection();
+		}
+		
+		if(e.getSource() == mLbl04) {
+			EmergencySection();
 		}
 	}
 

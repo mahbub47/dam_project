@@ -76,6 +76,12 @@ public class Registration implements ActionListener, MouseListener{
 		frame.getContentPane().setBackground(light01);
 		frame.setResizable(false);
 		
+		regLabel = new JLabel("Reg");
+		regLabel.setBounds(10, 435, 300, 115);
+		regLabel.setForeground(darkblue);
+		regLabel.setFont(loginFont);
+		frame.add(regLabel);
+		
 		pnl02 = new JPanel();
 		pnl02.setBounds(50,0,22,125);
 		pnl02.setBackground(red);
@@ -182,11 +188,7 @@ public class Registration implements ActionListener, MouseListener{
 		frame.add(regBtn);
 		
 		pnl01.setLayout(null);
-		regLabel = new JLabel("Reg");
-		regLabel.setBounds(10, 435, 300, 115);
-		regLabel.setForeground(darkblue);
-		regLabel.setFont(loginFont);
-		pnl01.add(regLabel);
+		
 		
 		frame.validate();
 	}
